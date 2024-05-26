@@ -4,6 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import mk.ukim.finki.wp.chekalna.model.enums.NumberStatus;
 import org.hibernate.Hibernate;
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 
 import java.util.Objects;
 
@@ -17,6 +19,11 @@ public class Number {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+//    @Min(0)
+//    @Max(50)
+//    @Column(nullable = false)
+//    private Integer number;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

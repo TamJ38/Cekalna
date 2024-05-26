@@ -7,6 +7,8 @@ import org.hibernate.Hibernate;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -35,8 +37,8 @@ public class Consultation {
     @Column(nullable = false)
     private ConsultationType type;
 
-    @ManyToOne(optional = false)
-    private Professor professor;
+    @OneToMany(mappedBy = "consultation", cascade = CascadeType.ALL)
+    private List<Reservation> reservations = new ArrayList<>();
 
 
     @Override

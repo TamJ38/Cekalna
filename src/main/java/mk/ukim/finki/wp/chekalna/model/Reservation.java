@@ -1,9 +1,6 @@
 package mk.ukim.finki.wp.chekalna.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.Hibernate;
 
@@ -35,6 +32,10 @@ public class Reservation {
 
     @ManyToOne(optional = false)
     private Number number;
+
+    @ManyToOne
+    @JoinColumn(name = "consultation_id")
+    private Consultation consultation;
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
