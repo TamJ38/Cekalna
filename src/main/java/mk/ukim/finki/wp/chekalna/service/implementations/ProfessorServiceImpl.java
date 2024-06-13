@@ -27,4 +27,8 @@ public class ProfessorServiceImpl implements ProfessorService {
                 .orElseThrow(() -> new ProfessorNotFoundException("Professor with id " + id + " doesn't exist"));
     }
 
+    public List<Professor> findProfessorsByName(String name) {
+        return professorRepository.findByNameContainingIgnoreCase(name);
+    }
+
 }
