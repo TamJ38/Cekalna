@@ -1,7 +1,6 @@
-package mk.ukim.finki.wp.chekalna.model;
+package mk.ukim.finki.wp.chekalna.model.enums;
 
 import lombok.Getter;
-import mk.ukim.finki.wp.chekalna.model.enums.AppRole;
 
 public enum UserRole {
     STUDENT(false, true),

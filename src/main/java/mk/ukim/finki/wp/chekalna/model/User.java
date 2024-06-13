@@ -2,6 +2,7 @@ package mk.ukim.finki.wp.chekalna.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import mk.ukim.finki.wp.chekalna.model.enums.UserRole;
 import org.hibernate.Hibernate;
 
 import java.util.Objects;

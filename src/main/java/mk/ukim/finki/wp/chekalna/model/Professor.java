@@ -2,8 +2,10 @@ package mk.ukim.finki.wp.chekalna.model;
 
 import jakarta.persistence.*;
 import lombok.*;
+import mk.ukim.finki.wp.chekalna.model.enums.ProfessorTitle;
 import org.hibernate.Hibernate;
 
+import java.util.List;
 import java.util.Objects;
 
 @Getter
@@ -28,6 +30,9 @@ public class Professor {
     private ProfessorTitle title;
 
     private Short orderingRank;
+
+    @OneToMany(mappedBy = "professor", fetch = FetchType.LAZY)
+    private List<Consultation> consultations;
 
     @ManyToOne
     private Room office;

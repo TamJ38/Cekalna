@@ -5,6 +5,7 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
 import lombok.*;
+import mk.ukim.finki.wp.chekalna.model.enums.RoomType;
 
 @Getter
 @Setter

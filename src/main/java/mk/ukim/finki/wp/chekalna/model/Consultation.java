@@ -5,6 +5,7 @@ import lombok.*;
 import mk.ukim.finki.wp.chekalna.model.enums.ConsultationType;
 import org.hibernate.Hibernate;
 
+import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.ArrayList;
@@ -21,21 +22,26 @@ import java.util.Set;
 public class Consultation {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @GeneratedValue
     private Long id;
 
-    @Column(nullable = false)
-    private LocalDate date;
+    @ManyToOne
+    private Professor professor;
 
-    @Column(nullable = false)
-    private LocalTime time;
-
-    @Column(nullable = false)
-    private String location;
+    @ManyToOne
+    private Room room;
 
     @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
     private ConsultationType type;
+
+    private LocalDate oneTimeDate;
+
+    @Enumerated(EnumType.STRING)
+    private DayOfWeek weeklyDayOfWeek;
+
+    private LocalTime startTime;
+
+    private LocalTime endTime;
 
     @OneToMany(mappedBy = "consultation", cascade = CascadeType.ALL)
     private List<Reservation> reservations = new ArrayList<>();
