@@ -28,8 +28,7 @@ public class Consultation {
     @ManyToOne
     private Professor professor;
 
-    @ManyToOne
-    private Room room;
+    private String location;
 
     @Enumerated(EnumType.STRING)
     private ConsultationType type;
