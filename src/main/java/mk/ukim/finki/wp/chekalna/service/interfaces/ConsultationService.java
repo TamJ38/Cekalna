@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ConsultationService {
-    Consultation saveConsultation(Consultation consultation);
+    Consultation saveConsultation(Consultation consultation,Integer numberOfStudents);
 
     Optional<Consultation> findById(Long id);
 

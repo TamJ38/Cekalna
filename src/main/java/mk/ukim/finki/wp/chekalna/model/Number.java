@@ -20,14 +20,18 @@ public class Number {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-//    @Min(0)
-//    @Max(50)
-//    @Column(nullable = false)
-//    private Integer number;
+    @Min(0)
+    @Max(50)
+    @Column(nullable = false)
+    private Integer number;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private NumberStatus status;
+    @ManyToOne
+    @JoinColumn(name = "consultation_id")
+    private Consultation consultation;
+
 
     @Override
     public boolean equals(Object o) {

@@ -52,6 +52,7 @@
                                         <div class="col-12">
                                             <strong>Локација: </strong> <span th:text="${consultation.location}"></span>
                                         </div>
+
                                     </div>
                                 </div>
                              </div>
@@ -62,6 +63,8 @@
                                     <button type="submit" class="btn text-white me-2" style="background-color: #212529;">Избриши термин за консултација</button>
                                 </form>
                                 <a th:href="@{/consultations/form(professorId=${professor.id}, consultationId=${consultation.id})}" class="btn text-white" style="background-color: #212529;" sec:authorize="hasAnyRole('ADMIN', 'PROFESSOR')">Измени термин за консултација</a>
+                                <a th:href="@{/reservations/consultation/{id}(id=${consultation.id})}" class="btn text-white" style="background-color: #212529;" sec:authorize="hasAnyRole( 'ROLE_GUEST')">Резервирај термин</a>
+
                             </div>
                         </li>
                     </ul>

@@ -65,10 +65,11 @@ public class ConsultationController {
 
     @PostMapping("/consultations/add")
     public String addConsultation(@ModelAttribute Consultation consultation,
-                                  @RequestParam("professorId") String professorId) {
+                                  @RequestParam("professorId") String professorId,
+                                  @RequestParam("maxStudents") Integer maxStudents) {
         Professor professor = professorService.getProfessorById(professorId);
         consultation.setProfessor(professor);
-        consultationService.saveConsultation(consultation);
+        consultationService.saveConsultation(consultation,maxStudents);
         return "redirect:/professors";
     }
 
