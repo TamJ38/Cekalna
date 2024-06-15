@@ -5,6 +5,7 @@ import lombok.*;
 import org.hibernate.Hibernate;
 
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Objects;
 
 @Getter
@@ -14,24 +15,24 @@ import java.util.Objects;
 @AllArgsConstructor
 @Entity
 public class Reservation {
-    @Id
-    @Column(name = "id")
-    private String id;
+        @Id
+        @GeneratedValue(strategy = GenerationType.IDENTITY)
+        private Long id;
 
-    @ManyToOne(optional = false)
-    private Student student;
+        @ManyToOne(optional = false)
+        private Student student;
 
-    @ManyToOne(optional = false)
-    private Professor professor;
+        @ManyToOne(optional = false)
+        private Professor professor;
 
-    @Column(name = "start_date", nullable = false)
-    private LocalDateTime startDate;
+        @Column(name = "start_date", nullable = false)
+        private LocalTime startDate;
 
-    @Column(name = "end_date", nullable = false)
-    private LocalDateTime endDate;
+        @Column(name = "end_date", nullable = false)
+        private LocalTime endDate;
 
-    @ManyToOne(optional = false)
-    private Number number;
+        @ManyToOne(optional = false)
+        private Number number;
 
     @ManyToOne
     @JoinColumn(name = "consultation_id")

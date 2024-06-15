@@ -41,11 +41,23 @@ public class Consultation {
     private LocalTime startTime;
 
     private LocalTime endTime;
+    private Integer maxStudents;
 
     @OneToMany(mappedBy = "consultation", cascade = CascadeType.ALL)
     private List<Reservation> reservations = new ArrayList<>();
 
+    @OneToMany(mappedBy = "consultation", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Number> numbers = new ArrayList<>();
 
+    public void addNumber(Number number) {
+        numbers.add(number);
+        number.setConsultation(this);
+    }
+
+    public void removeNumber(Number number) {
+        numbers.remove(number);
+        number.setConsultation(null);
+    }
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
