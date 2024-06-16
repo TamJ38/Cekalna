@@ -9,5 +9,7 @@ import java.util.Optional;
 public interface NumberRepository extends JpaSpecificationRepository<Number, Long> {
     Optional<Number>findById(Long id);
     List<Number> findByStatus(NumberStatus status);
+    List<Number> findByConsultationIdOrderByNumberAsc(Long consultationId);
+   long countByConsultationId(Long consultationId);
 
 }

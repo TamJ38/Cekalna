@@ -11,6 +11,7 @@ public interface NumberService {
     Optional<Number>  findById(Long id);
     List<Number> getAvailableNumbers();
     Number saveNumber(Number number);
-
+    List<Number> findByConsultationId(Long consultationId);
+    List<Number>  createNumberForConsultation(Long consultationId);
 
 }
