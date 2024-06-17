@@ -12,11 +12,10 @@ import java.util.Objects;
 @Setter
 @ToString
 @NoArgsConstructor
-@AllArgsConstructor
 @Entity
 public class Reservation {
         @Id
-        @GeneratedValue(strategy = GenerationType.IDENTITY)
+        @GeneratedValue(strategy = GenerationType.AUTO)
         private Long id;
 
         @ManyToOne(optional = false)
@@ -33,6 +32,15 @@ public class Reservation {
 
         @ManyToOne(optional = false)
         private Number number;
+
+    public Reservation(Student student, Professor professor, LocalTime startDate, LocalTime endDate, Number number, Consultation consultation) {
+        this.student = student;
+        this.professor = professor;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.number = number;
+        this.consultation = consultation;
+    }
 
     @ManyToOne
     @JoinColumn(name = "consultation_id")
