@@ -1,7 +1,5 @@
 package mk.ukim.finki.wp.chekalna.service.implementations;
 
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
 import lombok.AllArgsConstructor;
 import mk.ukim.finki.wp.chekalna.model.Consultation;
 import mk.ukim.finki.wp.chekalna.model.Number;
@@ -10,6 +8,7 @@ import mk.ukim.finki.wp.chekalna.model.enums.ConsultationType;
 import mk.ukim.finki.wp.chekalna.model.enums.NumberStatus;
 import mk.ukim.finki.wp.chekalna.model.exceptions.ConsultationNotFound;
 import mk.ukim.finki.wp.chekalna.repository.ConsultationRepository;
+import mk.ukim.finki.wp.chekalna.repository.ProfessorRepository;
 import mk.ukim.finki.wp.chekalna.service.interfaces.ConsultationService;
 import org.springframework.stereotype.Service;
 
@@ -28,6 +27,7 @@ public class ConsultationServiceImpl implements ConsultationService {
 
 
     private final ConsultationRepository consultationRepository;
+    private final ProfessorRepository professorRepository;
 
     public Consultation saveConsultation(Consultation consultation, Integer numberOfStudents) {
         for (int i = 1; i <= numberOfStudents; i++) {
@@ -86,6 +86,23 @@ public class ConsultationServiceImpl implements ConsultationService {
         });
 
         consultationRepository.saveAll(consultationList);
+    }
+
+    public List<Consultation> getConsultationsByProfessor(String professorId) {
+        var professor = professorRepository.findById(professorId).orElseThrow();
+        return consultationRepository.getConsultationsByProfessor(professor);
+    }
+
+    public Consultation getConsultationById(int id) {
+        return consultationRepository.findById((long) id).orElseThrow();
+    }
+
+    public boolean nextInQueue(int id) {
+        var consultation = this.getConsultationById(id);
+        if(consultation.getReservations().size() > 0)
+            consultation.getReservations().remove(0);
+        consultationRepository.save(consultation);
+        return true;
     }
 }
 

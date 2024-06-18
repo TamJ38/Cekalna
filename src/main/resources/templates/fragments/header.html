@@ -13,6 +13,9 @@
             <li>
                 <a href="/" class="nav-link px-2 text-white">Консултации</a>
             </li>
+            <li sec:authorize="hasRole('ROLE_ADMIN')">
+                <a th:href="@{/admin/consultations/{username}(username=${#authentication.name})}" class="nav-link px-2 text-white">Мои консултации</a>
+            </li>
         </ul>
 
 

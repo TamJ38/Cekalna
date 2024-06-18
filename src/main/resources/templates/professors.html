@@ -71,6 +71,10 @@
                                         <div class="col-12">
                                             <strong>Локација: </strong> <span th:text="${consultation.location}"></span>
                                         </div>
+                                        <div class="col-12" th:if="${consultation.startTime.isBefore(timeNow) && consultation.oneTimeDate.isEqual(today) && consultation.getReservations().size() > 0}">
+                                            <h6>На ред: </h6>
+                                            <h6 th:text="${consultation.getReservations().get(0).getNumber().getId()}"></h6>
+                                        </div>
                                         <th:block th:if="${consultation.timeTaken>0}">
                                             <div class="col-12">
                                                 <strong>Просечно време на чекање: </strong> <span th:text="${consultation.timeTaken}"></span>
@@ -97,7 +101,6 @@
                                 <a th:href="@{/reservations/consultation/{id}(id=${consultation.id})}"
                                    class="btn text-white" style="background-color: #212529;"
                                    sec:authorize="hasAnyRole( 'ROLE_GUEST')">Резервирај термин</a>
-
                             </div>
                         </li>
                     </ul>

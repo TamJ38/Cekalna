@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.time.DayOfWeek;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
 
@@ -48,6 +50,8 @@ public class ProfessorsController {
         model.addAttribute("daysOfWeek", dayOfWeekMap);
         model.addAttribute("professors", professors);
         model.addAttribute("consultations", consultationService.findAll());
+        model.addAttribute("timeNow", LocalTime.now());
+        model.addAttribute("today", LocalDate.now());
         return "professors";
     }
 
