@@ -43,7 +43,8 @@
                    class="form-control"
                    id="oneTimeDate"
                    name="oneTimeDate"
-                   th:value="${consultation?.oneTimeDate != null ? #dates.format(consultation.oneTimeDate, 'yyyy-MM-dd') : ''}">
+                   th:value="${formattedOneTimeDate}" />
+
         </div>
 
         <div class="mb-3">

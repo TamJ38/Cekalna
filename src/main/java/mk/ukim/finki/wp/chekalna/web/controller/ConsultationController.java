@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -51,10 +52,15 @@ public class ConsultationController {
 
 
         Consultation consultation = null;
+        String formattedOneTimeDate = "";
         if (consultationId != null) {
             consultation = consultationService.findById(consultationId).orElse(null);
+            if (consultation != null && consultation.getOneTimeDate() != null) {
+                formattedOneTimeDate = DateTimeFormatter.ofPattern("yyyy-MM-dd").format(consultation.getOneTimeDate());
+            }
         }
         model.addAttribute("consultation", consultation);
+        model.addAttribute("formattedOneTimeDate", formattedOneTimeDate);
 
 
         List<Room> rooms = roomService.getAllRooms();
