@@ -35,6 +35,7 @@ public class ProfessorsController {
         } else {
             professors = professorService.getAllProfessors();
         }
+        consultationService.calcualteAverageWaitingTime();
         Map<DayOfWeek, String> dayOfWeekMap = Map.of(
                 DayOfWeek.MONDAY, "Понеделник",
                 DayOfWeek.TUESDAY, "Вторник",

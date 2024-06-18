@@ -20,6 +20,8 @@ public interface ConsultationService {
 
     void deleteConsultation(Long id);
 
-    Consultation updateConsultation(Long id, String location, ConsultationType type, LocalDate oneTimeDate, DayOfWeek weeklyDayOfWeek, LocalTime startTime, LocalTime endTime);
+    public Consultation updateConsultation(Long id, String location, ConsultationType type, LocalDate oneTimeDate, DayOfWeek weeklyDayOfWeek, LocalTime startTime, LocalTime endTime);
     List<Consultation> getConsultationsByProfessor(String professorId);
+    void calcualteAverageWaitingTime();
+
 }

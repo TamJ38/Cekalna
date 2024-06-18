@@ -10,6 +10,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.time.LocalTime;
+import java.util.List;
 
 @Controller
 @RequestMapping("/reservations")
@@ -34,14 +36,18 @@ public class ReservationController {
         User user = userService.findById(studentEmail)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
+        List<Number> consultationNumbers = numberService.findByConsultationId(consultationId);
+        if (consultationNumbers.isEmpty()) {
+            consultationNumbers = numberService.createNumberForConsultation(consultationId);
+        }
+
         model.addAttribute("consultation", consultation);
         model.addAttribute("student", user);
-        model.addAttribute("numbers", numberService.getAllNumbers());
+        model.addAttribute("numbers", consultationNumbers);
         model.addAttribute("NumberStatus", NumberStatus.values());
 
         return "reservation-termin";
     }
-
 
     @PostMapping("/reserve")
     public String reserveNumber(@RequestParam("numberId") Long numberId,
@@ -53,21 +59,14 @@ public class ReservationController {
         String studentEmail = principal.getName();
         User user = userService.findById(studentEmail)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
-        Student student = studentService.getStudentById(user.getId())
+        Student student = studentService.findByEmail(user.getId())
                 .orElseThrow(() -> new IllegalArgumentException("Invalid student Id: " + user.getId()));
 
         Consultation consultation = consultationService.findById(consultationId)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid consultation Id: " + consultationId));
         number.setStatus(NumberStatus.APPROVED);
         numberService.saveNumber(number);
-        Reservation reservation = new Reservation();
-        reservation.setNumber(number);
-        reservation.setStudent(student);
-        reservation.setConsultation(consultation);
-        reservation.setProfessor(consultation.getProfessor());
-        reservation.setStartDate(consultation.getStartTime());
-        reservation.setEndDate(consultation.getEndTime());
-        reservationService.save(reservation);
+        reservationService.save(new Reservation(student,consultation.getProfessor(),consultation.getStartTime(),consultation.getEndTime(),number,consultation));
 
         return "redirect:/";
     }

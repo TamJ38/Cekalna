@@ -29,7 +29,7 @@ public class Number {
     @Column(nullable = false)
     private NumberStatus status;
     @ManyToOne
-    @JoinColumn(name = "consultation_id")
+    @JoinColumn(name = "consultation_id", nullable = false)
     private Consultation consultation;
 
 

@@ -12,31 +12,40 @@ import java.util.Objects;
 @Setter
 @ToString
 @NoArgsConstructor
-@AllArgsConstructor
 @Entity
 public class Reservation {
-        @Id
-        @GeneratedValue(strategy = GenerationType.IDENTITY)
-        private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Long id;
 
-        @ManyToOne(optional = false)
-        private Student student;
+    @ManyToOne(optional = false)
+    private Student student;
 
-        @ManyToOne(optional = false)
-        private Professor professor;
+    @ManyToOne(optional = false)
+    private Professor professor;
 
-        @Column(name = "start_date", nullable = false)
-        private LocalTime startDate;
+    @Column(name = "start_date", nullable = false)
+    private LocalTime startDate;
 
-        @Column(name = "end_date", nullable = false)
-        private LocalTime endDate;
+    @Column(name = "end_date", nullable = false)
+    private LocalTime endDate;
 
-        @ManyToOne(optional = false)
-        private Number number;
+    @ManyToOne(optional = false, cascade = CascadeType.ALL)
+    private Number number;
+
+    public Reservation(Student student, Professor professor, LocalTime startDate, LocalTime endDate, Number number, Consultation consultation) {
+        this.student = student;
+        this.professor = professor;
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.number = number;
+        this.consultation = consultation;
+    }
 
     @ManyToOne
-    @JoinColumn(name = "consultation_id")
+    @JoinColumn(name = "consultation_id", nullable = false)
     private Consultation consultation;
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -44,6 +53,7 @@ public class Reservation {
         Reservation reservation = (Reservation) o;
         return getId() != null && Objects.equals(getId(), reservation.getId());
     }
+
     @Override
     public int hashCode() {
         return getClass().hashCode();

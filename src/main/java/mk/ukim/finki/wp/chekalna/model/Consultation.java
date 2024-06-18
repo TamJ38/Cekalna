@@ -42,8 +42,8 @@ public class Consultation {
 
     private LocalTime endTime;
     private Integer maxStudents;
-
-    @OneToMany(mappedBy = "consultation", cascade = CascadeType.ALL)
+    private Integer timeTaken=0;
+    @OneToMany(mappedBy = "consultation", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Reservation> reservations = new ArrayList<>();
 
     @OneToMany(mappedBy = "consultation", cascade = CascadeType.ALL, orphanRemoval = true)
