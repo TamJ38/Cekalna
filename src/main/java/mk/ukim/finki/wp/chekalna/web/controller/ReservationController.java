@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 import java.time.LocalTime;
+import java.util.List;
 
 @Controller
 @RequestMapping("/reservations")
@@ -35,14 +36,18 @@ public class ReservationController {
         User user = userService.findById(studentEmail)
                 .orElseThrow(() -> new IllegalArgumentException("User not found"));
 
+        List<Number> consultationNumbers = numberService.findByConsultationId(consultationId);
+        if (consultationNumbers.isEmpty()) {
+            consultationNumbers = numberService.createNumberForConsultation(consultationId);
+        }
+
         model.addAttribute("consultation", consultation);
         model.addAttribute("student", user);
-        model.addAttribute("numbers", numberService.getAllNumbers());
+        model.addAttribute("numbers", consultationNumbers);
         model.addAttribute("NumberStatus", NumberStatus.values());
 
         return "reservation-termin";
     }
-
 
     @PostMapping("/reserve")
     public String reserveNumber(@RequestParam("numberId") Long numberId,
