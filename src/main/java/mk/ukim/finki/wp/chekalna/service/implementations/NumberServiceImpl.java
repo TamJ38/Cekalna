@@ -44,6 +44,8 @@ public class NumberServiceImpl implements NumberService {
     }
 
     @Override
+    public void deleteByid(List<Long> ids) {
+        this.numberRepository.deleteAllById(ids);
     public List<Number> findByConsultationId(Long consultationId) {
         return numberRepository.findByConsultationIdOrderByNumberAsc(consultationId);
     }

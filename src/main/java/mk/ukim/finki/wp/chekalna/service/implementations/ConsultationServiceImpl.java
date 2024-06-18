@@ -5,6 +5,7 @@ import jakarta.persistence.Enumerated;
 import lombok.AllArgsConstructor;
 import mk.ukim.finki.wp.chekalna.model.Consultation;
 import mk.ukim.finki.wp.chekalna.model.Number;
+import mk.ukim.finki.wp.chekalna.model.Reservation;
 import mk.ukim.finki.wp.chekalna.model.enums.ConsultationType;
 import mk.ukim.finki.wp.chekalna.model.enums.NumberStatus;
 import mk.ukim.finki.wp.chekalna.model.exceptions.ConsultationNotFound;
@@ -13,10 +14,13 @@ import mk.ukim.finki.wp.chekalna.service.interfaces.ConsultationService;
 import org.springframework.stereotype.Service;
 
 import java.time.DayOfWeek;
+import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
+import java.util.LongSummaryStatistics;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -25,14 +29,15 @@ public class ConsultationServiceImpl implements ConsultationService {
 
     private final ConsultationRepository consultationRepository;
 
-    public Consultation saveConsultation(Consultation consultation,  Integer numberOfStudents) {
+    public Consultation saveConsultation(Consultation consultation, Integer numberOfStudents) {
         for (int i = 1; i <= numberOfStudents; i++) {
             Number number = new Number();
             number.setNumber(i);
             number.setStatus(NumberStatus.PENDING);
             consultation.addNumber(number);
         }
-        return consultationRepository.save(consultation);    }
+        return consultationRepository.save(consultation);
+    }
 
     public Optional<Consultation> findById(Long id) {
         return consultationRepository.findById(id);
@@ -59,6 +64,28 @@ public class ConsultationServiceImpl implements ConsultationService {
 
         consultationRepository.save(consultation);
         return consultation;
+    }
+
+    @Override
+    public void calcualteAverageWaitingTime() {
+        List<Consultation> consultationList = consultationRepository.findAll();
+
+        consultationList.forEach(consultation -> {
+            List<Reservation> reservationList = consultation.getReservations().
+                    stream().filter(reservation -> reservation.
+                            getNumber().getStatus() == NumberStatus.FINISHED).toList();
+
+
+            if (reservationList.size() > 0) {
+                LongSummaryStatistics summaryStatistics = reservationList.stream().
+                        mapToLong(i -> Duration.between(i.getStartDate(), i.getEndDate()).toMinutes()).
+                        summaryStatistics();
+
+                consultation.setTimeTaken((int) summaryStatistics.getAverage());
+            }
+        });
+
+        consultationRepository.saveAll(consultationList);
     }
 }
 

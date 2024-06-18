@@ -14,4 +14,5 @@ public interface NumberService {
     List<Number> findByConsultationId(Long consultationId);
     List<Number>  createNumberForConsultation(Long consultationId);
 
+    void deleteByid(List<Long> ids);
 }
