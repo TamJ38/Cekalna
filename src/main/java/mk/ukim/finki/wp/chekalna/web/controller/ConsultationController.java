@@ -8,12 +8,17 @@ import mk.ukim.finki.wp.chekalna.model.enums.ConsultationType;
 import mk.ukim.finki.wp.chekalna.service.interfaces.ConsultationService;
 import mk.ukim.finki.wp.chekalna.service.interfaces.ProfessorService;
 import mk.ukim.finki.wp.chekalna.service.interfaces.RoomService;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.Map;
@@ -92,6 +97,28 @@ public class ConsultationController {
     public String deleteConsultation(@PathVariable("id") Long id) {
         consultationService.deleteConsultation(id);
         return "redirect:/professors";
+    }
+
+    @GetMapping("/admin/consultations/{username}")
+    public String myConsultationsView(@PathVariable String username, Model model) {
+        var consultations = consultationService.getConsultationsByProfessor(username);
+
+        Map<DayOfWeek, String> dayOfWeekMap = Map.of(
+                DayOfWeek.MONDAY, "Понеделник",
+                DayOfWeek.TUESDAY, "Вторник",
+                DayOfWeek.WEDNESDAY, "Среда",
+                DayOfWeek.THURSDAY, "Четврток",
+                DayOfWeek.FRIDAY, "Петок",
+                DayOfWeek.SATURDAY, "Сабота",
+                DayOfWeek.SUNDAY, "Недела"
+        );
+
+        model.addAttribute("username", username);
+        model.addAttribute("consultations", consultations);
+        model.addAttribute("today", LocalDate.now());
+        model.addAttribute("daysOfWeek", dayOfWeekMap);
+
+        return "my-consultations";
     }
 }
 

@@ -54,6 +54,9 @@
             <li sec:authorize="hasRole('ROLE_ADMIN')">
                 <a href="/admin/courses" class="nav-link px-2 text-white">Курсеви</a>
             </li>
+            <li sec:authorize="hasRole('ROLE_ADMIN')">
+                <a th:href="@{/admin/consultations/{username}(username=${#authentication.name})}" class="nav-link px-2 text-white">Мои консултации</a>
+            </li>
         </ul>
 
 

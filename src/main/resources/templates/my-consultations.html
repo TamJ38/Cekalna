@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org">
+<head>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.misdeliver.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+</head>
+<body>
+<div th:replace="~{fragments/header :: header}"></div>
+<h1>Welcome, <span th:text="${username}">User</span>!</h1>
+
+<div th:if="${#lists.isEmpty(consultations)}">
+    Немате закажани консултации
+</div>
+
+<div th:each="consultation : ${consultations}">
+    <div class="card mb-3">
+        <div class="card-body">
+            <h5 th:text="${consultation.professor.name}">Professor Name</h5>
+            <p th:text="${consultation.professor.email}">Email</p>
+            <ul style="list-style-type: none">
+                <li>
+                    <div class="row mb-2">
+                        <div class="col-md-8">
+                            <div class="row">
+                                <div class="col-12">
+                                    <strong><span th:text="${consultation.type}"></span></strong>
+                                </div>
+                                <div class="col-12">
+                                    <strong>Ден: </strong>
+                                    <span th:text="${daysOfWeek[consultation.weeklyDayOfWeek]}"></span>
+                                </div>
+                                <div class="col-12">
+                                    <strong>Време: </strong>
+                                    <span th:text="${consultation.startTime + ' - ' + consultation.endTime}"></span>
+                                </div>
+                                <div class="col-12">
+                                    <strong>Локација: </strong>
+                                    <span th:text="${consultation.location}"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 d-flex justify-content-lg-start align-items-center" style="width: 600px">
+                        <form th:method="post" th:action="@{'/consultations/delete/{id}' (id=${consultation.id})}"
+                              th:if="${consultation.oneTimeDate.isBefore(today)}"
+                              sec:authorize="hasAnyRole('ADMIN', 'PROFESSOR')" style="display: inline;">
+                            <button type="submit" class="btn text-white me-2" style="background-color: #212529;">
+                                Избриши термин за консултација
+                            </button>
+                        </form>
+                        <a th:href="@{/consultations/form(professorId=${consultation.professor.id}, consultationId=${consultation.id})}"
+                           class="btn text-white" style="background-color: #212529;"
+                           th:if="${consultation.oneTimeDate.isBefore(today)}"
+                           sec:authorize="hasAnyRole('ADMIN', 'PROFESSOR')">
+                            Измени термин за консултација
+                        </a>
+                        <div th:if="${consultation.oneTimeDate.isEqual(today)}">
+                            <h1>Test</h1>
+                        </div>
+                    </div>
+                </li>
+            </ul>
+        </div>
+    </div>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+</body>
+</html>
