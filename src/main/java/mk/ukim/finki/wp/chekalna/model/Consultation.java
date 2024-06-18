@@ -42,7 +42,7 @@ public class Consultation {
 
     private LocalTime endTime;
     private Integer maxStudents;
-
+    private Integer timeTaken=0;
     @OneToMany(mappedBy = "consultation", cascade = CascadeType.ALL)
     private List<Reservation> reservations = new ArrayList<>();
 

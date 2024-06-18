@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns:sec="http://www.w3.org/1999/xhtml">
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns:sec="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
 <head>
     <!--/*  Each token will be replaced by their respective titles in the resulting page. */-->
     <!--    <title layout:title-pattern="$LAYOUT_TITLE - $CONTENT_TITLE">Task List</title>-->
@@ -14,6 +14,10 @@
             const now = new Date();
             const formattedTime = now.toLocaleTimeString();
             currentTimeElement.textContent = formattedTime;
+            // fetch("/avarage").then((res) => res.json()).then((data) => {
+            //     console.log(data)
+            //     const currentTimeElement = document.getElementById('test').textContent = data;
+            // })
         }
 
         setInterval(updateTime, 1000);
@@ -27,7 +31,9 @@
 </div>
 <div class="container-fluid ps-5 pe-5">
     <div layout:fragment="content">
-        <p style="margin-top: 30px"><span id="currentTime" th:text="${currentDate}" class="font-monospace" style="font-size: large; font-weight: bold;"></span>
+        <p style="margin-top: 30px"><span id="currentTime" th:text="${currentDate}" class="font-monospace"
+                                          style="font-size: large; font-weight: bold;"></span>
+            <span id="test"></span>
         </p>
         <!-- prebaruvanje na profesori spored nivnoto ime-->
         <form th:action="@{/}" method="get" class="mb-4" style="width: 500px; margin-top: 10px; margin-left: 930px">
@@ -65,7 +71,12 @@
                                         <div class="col-12">
                                             <strong>Локација: </strong> <span th:text="${consultation.location}"></span>
                                         </div>
-
+                                        <th:block th:if="${consultation.timeTaken>0}">
+                                            <div class="col-12">
+                                                <strong>Просечно време на чекање: </strong> <span th:text="${consultation.timeTaken}"></span>
+                                                <span> минути.</span>
+                                            </div>
+                                        </th:block>
                                     </div>
                                 </div>
                             </div>
