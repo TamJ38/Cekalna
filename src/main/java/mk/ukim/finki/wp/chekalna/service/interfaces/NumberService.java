@@ -13,4 +13,5 @@ public interface NumberService {
     Number saveNumber(Number number);
 
 
+    void deleteByid(List<Long> ids);
 }

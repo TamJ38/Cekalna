@@ -37,4 +37,9 @@ public class NumberServiceImpl implements NumberService {
     public Number saveNumber(Number number) {
         return numberRepository.save(number);
     }
+
+    @Override
+    public void deleteByid(List<Long> ids) {
+        this.numberRepository.deleteAllById(ids);
+    }
 }
