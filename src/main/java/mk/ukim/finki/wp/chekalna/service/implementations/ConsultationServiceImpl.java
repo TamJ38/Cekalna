@@ -92,6 +92,18 @@ public class ConsultationServiceImpl implements ConsultationService {
         var professor = professorRepository.findById(professorId).orElseThrow();
         return consultationRepository.getConsultationsByProfessor(professor);
     }
+
+    public Consultation getConsultationById(int id) {
+        return consultationRepository.findById((long) id).orElseThrow();
+    }
+
+    public boolean nextInQueue(int id) {
+        var consultation = this.getConsultationById(id);
+        if(consultation.getReservations().size() > 0)
+            consultation.getReservations().remove(0);
+        consultationRepository.save(consultation);
+        return true;
+    }
 }
 
 

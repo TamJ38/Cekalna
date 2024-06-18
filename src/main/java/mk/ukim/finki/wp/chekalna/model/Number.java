@@ -45,4 +45,8 @@ public class Number {
         return getClass().hashCode();
     }
 
+    @Override
+    public String toString() {
+        return this.number.toString();
+    }
 }

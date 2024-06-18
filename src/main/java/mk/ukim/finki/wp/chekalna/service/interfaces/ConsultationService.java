@@ -1,6 +1,7 @@
 package mk.ukim.finki.wp.chekalna.service.interfaces;
 
 import mk.ukim.finki.wp.chekalna.model.Consultation;
+import mk.ukim.finki.wp.chekalna.model.Reservation;
 import mk.ukim.finki.wp.chekalna.model.enums.ConsultationType;
 
 
@@ -20,8 +21,13 @@ public interface ConsultationService {
 
     void deleteConsultation(Long id);
 
-    public Consultation updateConsultation(Long id, String location, ConsultationType type, LocalDate oneTimeDate, DayOfWeek weeklyDayOfWeek, LocalTime startTime, LocalTime endTime);
+    Consultation updateConsultation(Long id, String location, ConsultationType type, LocalDate oneTimeDate, DayOfWeek weeklyDayOfWeek, LocalTime startTime, LocalTime endTime);
+
     List<Consultation> getConsultationsByProfessor(String professorId);
+
     void calcualteAverageWaitingTime();
 
+    Consultation getConsultationById(int id);
+
+    boolean nextInQueue(int id);
 }

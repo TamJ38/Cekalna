@@ -57,8 +57,14 @@
                            sec:authorize="hasAnyRole('ADMIN', 'PROFESSOR')">
                             Измени термин за консултација
                         </a>
-                        <div th:if="${consultation.oneTimeDate.isEqual(today)}">
-                            <h1>Test</h1>
+                        <div th:if="${consultation.startTime.isBefore(timeNow) && consultation.oneTimeDate.isEqual(today) && consultation.getReservations().size() > 0}">
+                            <h6>На ред: </h6>
+                            <h6 th:text="${consultation.getReservations().get(0).getNumber().getId()}"></h6>
+                            <a th:href="@{/admin/consultations/update/{id}(id=${consultation.id})}"
+                               style="background-color: #212529;" class="btn text-white">Следен</a>
+                        </div>
+                        <div th:if="${consultation.getReservations().size() <= 0}">
+                            <h6>Нема резервации</h6>
                         </div>
                     </div>
                 </li>

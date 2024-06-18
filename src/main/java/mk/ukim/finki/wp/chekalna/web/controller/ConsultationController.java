@@ -6,6 +6,7 @@ import mk.ukim.finki.wp.chekalna.model.Professor;
 import mk.ukim.finki.wp.chekalna.model.Reservation;
 import mk.ukim.finki.wp.chekalna.model.Room;
 import mk.ukim.finki.wp.chekalna.model.enums.ConsultationType;
+import mk.ukim.finki.wp.chekalna.model.enums.NumberStatus;
 import mk.ukim.finki.wp.chekalna.repository.ReservationRepository;
 import mk.ukim.finki.wp.chekalna.service.interfaces.*;
 import org.springframework.http.HttpStatus;
@@ -16,10 +17,12 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Principal;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -123,11 +126,37 @@ public class ConsultationController {
         model.addAttribute("username", username);
         model.addAttribute("consultations", consultations);
         model.addAttribute("today", LocalDate.now());
+        model.addAttribute("timeNow", LocalTime.now());
         model.addAttribute("daysOfWeek", dayOfWeekMap);
 
         return "my-consultations";
     }
 
+    @GetMapping("/admin/consultations/update/{id}")
+    public String updateQueue(@PathVariable int id, Principal principal, Model model) {
+        if (principal != null) {
+            this.consultationService.nextInQueue(id);
+            var username = principal.getName();
+            var consultations = consultationService.getConsultationsByProfessor(username);
 
+            Map<DayOfWeek, String> dayOfWeekMap = Map.of(
+                    DayOfWeek.MONDAY, "Понеделник",
+                    DayOfWeek.TUESDAY, "Вторник",
+                    DayOfWeek.WEDNESDAY, "Среда",
+                    DayOfWeek.THURSDAY, "Четврток",
+                    DayOfWeek.FRIDAY, "Петок",
+                    DayOfWeek.SATURDAY, "Сабота",
+                    DayOfWeek.SUNDAY, "Недела"
+            );
+
+            model.addAttribute("username", username);
+            model.addAttribute("consultations", consultations);
+            model.addAttribute("today", LocalDate.now());
+            model.addAttribute("timeNow", LocalTime.now());
+            model.addAttribute("daysOfWeek", dayOfWeekMap);
+        }
+
+        return "my-consultations";
+    }
 }
 
