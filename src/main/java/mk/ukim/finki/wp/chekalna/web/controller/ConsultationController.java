@@ -1,15 +1,14 @@
 package mk.ukim.finki.wp.chekalna.web.controller;
 
 import lombok.AllArgsConstructor;
-import mk.ukim.finki.wp.chekalna.model.Consultation;
+import mk.ukim.finki.wp.chekalna.model.*;
 import mk.ukim.finki.wp.chekalna.model.Number;
-import mk.ukim.finki.wp.chekalna.model.Professor;
-import mk.ukim.finki.wp.chekalna.model.Reservation;
-import mk.ukim.finki.wp.chekalna.model.Room;
 import mk.ukim.finki.wp.chekalna.model.enums.ConsultationType;
 import mk.ukim.finki.wp.chekalna.model.enums.NumberStatus;
+import mk.ukim.finki.wp.chekalna.repository.ConsultationRepository;
 import mk.ukim.finki.wp.chekalna.repository.NumberRepository;
 import mk.ukim.finki.wp.chekalna.repository.ReservationRepository;
+import mk.ukim.finki.wp.chekalna.repository.TimeTakenRepository;
 import mk.ukim.finki.wp.chekalna.service.interfaces.*;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -42,6 +41,8 @@ public class ConsultationController {
     private final NumberService numberService;
     private final RoomService roomService;
     private final NumberRepository numberRepository;
+    private final TimeTakenRepository timeTakenRepository;
+    private final ConsultationRepository consultationRepository;
 
 
     @GetMapping("/consultations/form")
@@ -153,6 +154,16 @@ public class ConsultationController {
                 currentReservation.setEndDate(LocalTime.now());
                 currentReservation.setNumber(currentNumber);
                 reservationService.save(currentReservation);
+
+                ///
+                Consultation currentConsultion=this.consultationService.findById((long)id).orElseThrow(()->new RuntimeException(""));
+
+                List<TimeTaken>timeTakenList=currentConsultion.getWaitingTime();
+                timeTakenList.add(timeTakenRepository.save(new TimeTaken(currentReservation.getStartDate(),currentReservation.getEndDate())));
+                currentConsultion.setWaitingTime(timeTakenList);
+                this.consultationRepository.save(currentConsultion);
+                this.consultationService.calcualteAverageWaitingTime(currentConsultion.getId());
+
                 this.consultationService.nextInQueue(id);
                 var consultations = consultationService.getConsultationsByProfessor(username);
                 Consultation consultation = this.consultationService.getConsultationById(id);

@@ -67,25 +67,11 @@ public class ConsultationServiceImpl implements ConsultationService {
     }
 
     @Override
-    public void calcualteAverageWaitingTime() {
-        List<Consultation> consultationList = consultationRepository.findAll();
-
-        consultationList.forEach(consultation -> {
-            List<Reservation> reservationList = consultation.getReservations().
-                    stream().filter(reservation -> reservation.
-                            getNumber().getStatus() == NumberStatus.FINISHED).toList();
-
-
-            if (reservationList.size() > 0) {
-                LongSummaryStatistics summaryStatistics = reservationList.stream().
-                        mapToLong(i -> Duration.between(i.getStartDate(), i.getEndDate()).toMinutes()).
-                        summaryStatistics();
-
-                consultation.setTimeTaken((int) summaryStatistics.getAverage());
-            }
-        });
-
-        consultationRepository.saveAll(consultationList);
+    public void calcualteAverageWaitingTime(Long id) {
+        Consultation currentConsultation=findById(id).orElseThrow(() -> new ConsultationNotFound("Consultation not found with id: " + id));
+        LongSummaryStatistics summaryStatistics=currentConsultation.getWaitingTime().stream().mapToLong(i->i.calculateTime()).summaryStatistics();
+        currentConsultation.setTimeTaken((int) Math.floor(summaryStatistics.getAverage()));
+        consultationRepository.save(currentConsultation);
     }
 
     public List<Consultation> getConsultationsByProfessor(String professorId) {
