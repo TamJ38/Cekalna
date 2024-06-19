@@ -2,11 +2,13 @@ package mk.ukim.finki.wp.chekalna.web.controller;
 
 import lombok.AllArgsConstructor;
 import mk.ukim.finki.wp.chekalna.model.Consultation;
+import mk.ukim.finki.wp.chekalna.model.Number;
 import mk.ukim.finki.wp.chekalna.model.Professor;
 import mk.ukim.finki.wp.chekalna.model.Reservation;
 import mk.ukim.finki.wp.chekalna.model.Room;
 import mk.ukim.finki.wp.chekalna.model.enums.ConsultationType;
 import mk.ukim.finki.wp.chekalna.model.enums.NumberStatus;
+import mk.ukim.finki.wp.chekalna.repository.NumberRepository;
 import mk.ukim.finki.wp.chekalna.repository.ReservationRepository;
 import mk.ukim.finki.wp.chekalna.service.interfaces.*;
 import org.springframework.http.HttpStatus;
@@ -39,6 +41,7 @@ public class ConsultationController {
     private final ReservationRepository reservationRepository;
     private final NumberService numberService;
     private final RoomService roomService;
+    private final NumberRepository numberRepository;
 
 
     @GetMapping("/consultations/form")
@@ -138,12 +141,30 @@ public class ConsultationController {
         return "my-consultations";
     }
 
-    @GetMapping("/consultations/update/{id}/{username}")
-    public String updateQueue(@PathVariable int id, @PathVariable String username, Model model) {
-        this.consultationService.nextInQueue(id);
-        var consultations = consultationService.getConsultationsByProfessor(username);
+    @GetMapping("/consultations/update/{id}/{numberId}/{username}")
+    public String updateQueue(@PathVariable int id, @PathVariable int numberId, @PathVariable String username, Model model) {
+        Number currentNumber = numberService.findById((long) numberId)
+                    .orElseThrow(() -> new RuntimeException("Number not found!"));
+        Reservation currentReservation = reservationService.findbyNumberId((long) numberId);
+        if (currentReservation != null) {
+                currentNumber.setStatus(NumberStatus.FINISHED);
+                numberRepository.save(currentNumber);
 
-        Map<DayOfWeek, String> dayOfWeekMap = Map.of(
+                currentReservation.setEndDate(LocalTime.now());
+                currentReservation.setNumber(currentNumber);
+                reservationService.save(currentReservation);
+                this.consultationService.nextInQueue(id);
+                var consultations = consultationService.getConsultationsByProfessor(username);
+                Consultation consultation = this.consultationService.getConsultationById(id);
+                if (!consultation.getReservations().isEmpty()) {
+                    Reservation nextReservation = consultation.getReservations().get(0);
+                    nextReservation.setStartDate(LocalTime.now());
+                    this.reservationRepository.save(nextReservation);
+                } else {
+                    model.addAttribute("message", "No more reservations in queue.");
+                }
+
+          Map<DayOfWeek, String> dayOfWeekMap = Map.of(
                 DayOfWeek.MONDAY, "Понеделник",
                 DayOfWeek.TUESDAY, "Вторник",
                 DayOfWeek.WEDNESDAY, "Среда",
@@ -151,15 +172,20 @@ public class ConsultationController {
                 DayOfWeek.FRIDAY, "Петок",
                 DayOfWeek.SATURDAY, "Сабота",
                 DayOfWeek.SUNDAY, "Недела"
-        );
+          );
 
-        model.addAttribute("username", username);
-        model.addAttribute("consultations", consultations);
-        model.addAttribute("today", LocalDate.now());
-        model.addAttribute("timeNow", LocalTime.now());
-        model.addAttribute("daysOfWeek", dayOfWeekMap);
+          model.addAttribute("username", username);
+          model.addAttribute("consultations", consultations);
+          model.addAttribute("today", LocalDate.now());
+          model.addAttribute("timeNow", LocalTime.now());
+          model.addAttribute("daysOfWeek", dayOfWeekMap);
+          } else {
+                model.addAttribute("error", "Reservation not found for the given number ID.");
+            }
+        }
 
         return "my-consultations";
     }
 }
+
 

@@ -1,11 +1,13 @@
 package mk.ukim.finki.wp.chekalna.service.implementations;
 
+import mk.ukim.finki.wp.chekalna.model.Number;
 import mk.ukim.finki.wp.chekalna.model.Reservation;
 import mk.ukim.finki.wp.chekalna.repository.ReservationRepository;
 import mk.ukim.finki.wp.chekalna.service.interfaces.ReservationService;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Objects;
 
 @Service
 public class ReservationServiceImpl implements ReservationService {
@@ -20,8 +22,14 @@ public class ReservationServiceImpl implements ReservationService {
         return reservationRepository.save(reservation);
     }
 
+
     @Override
     public void deleteById(List<String> ids) {
         this.reservationRepository.deleteAllById(ids);
+    }
+
+    @Override
+    public Reservation findbyNumberId(Long numberId) {
+        return this.reservationRepository.findAll().stream().filter(reservation -> Objects.equals(reservation.getNumber().getId(), numberId)).findFirst().orElse(null);
     }
 }
