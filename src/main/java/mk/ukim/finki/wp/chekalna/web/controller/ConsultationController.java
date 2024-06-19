@@ -144,21 +144,38 @@ public class ConsultationController {
     @GetMapping("/admin/consultations/update/{id}/{numberId}")
     public String updateQueue(@PathVariable int id, @PathVariable int numberId, Principal principal, Model model) {
         if (principal != null) {
+
+
+            // finds current number and reservation
+            Number currentNumber = numberService.findById((long) numberId).orElseThrow(() -> new RuntimeException("Number not found!"));
+            Reservation currentReservation = reservationService.findbyNumberId((long) numberId);
+
+
+            // updates number
+            currentNumber.setStatus(NumberStatus.FINISHED);
+            numberRepository.save(currentNumber);
+
+
+            // startDate for the first one is always the start of the consultation, so we update the end time
+            currentReservation.setEndDate(LocalTime.now());
+            currentReservation.setNumber(currentNumber);
+
+            reservationService.save(currentReservation);
+
+            // updates average waiting time
+            this.consultationService.calcualteAverageWaitingTime();
+
+            // deletes the current reservation/finished reservation
             this.consultationService.nextInQueue(id);
             var username = principal.getName();
             var consultations = consultationService.getConsultationsByProfessor(username);
 
-            Number currentNumber = numberService.findById((long) numberId).orElseThrow(() -> new RuntimeException("Number not found!"));
+            // gets the next in line reservation, updates the startDate, later on will update the endDate and calculate average waaiting time
+            Reservation nextReservation = this.consultationService.getConsultationById(id).getReservations().get(0);
+            nextReservation.setStartDate(LocalTime.now());
 
-            Reservation reservation = reservationService.findbyNumberId((long) numberId);
+            this.reservationRepository.save(nextReservation);
 
-            currentNumber.setStatus(NumberStatus.FINISHED);
-            numberRepository.save(currentNumber);
-
-            reservation.setEndDate(LocalTime.now());
-            reservation.setNumber(currentNumber);
-
-            reservationService.save(reservation);
 
             Map<DayOfWeek, String> dayOfWeekMap = Map.of(
                     DayOfWeek.MONDAY, "Понеделник",
