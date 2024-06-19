@@ -25,7 +25,7 @@ public interface ConsultationService {
 
     List<Consultation> getConsultationsByProfessor(String professorId);
 
-    void calcualteAverageWaitingTime();
+    void calcualteAverageWaitingTime(Long id);
 
     Consultation getConsultationById(int id);
 
