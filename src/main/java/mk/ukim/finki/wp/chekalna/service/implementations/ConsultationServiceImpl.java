@@ -3,23 +3,22 @@ package mk.ukim.finki.wp.chekalna.service.implementations;
 import lombok.AllArgsConstructor;
 import mk.ukim.finki.wp.chekalna.model.Consultation;
 import mk.ukim.finki.wp.chekalna.model.Number;
-import mk.ukim.finki.wp.chekalna.model.Reservation;
+import mk.ukim.finki.wp.chekalna.model.Professor;
 import mk.ukim.finki.wp.chekalna.model.enums.ConsultationType;
 import mk.ukim.finki.wp.chekalna.model.enums.NumberStatus;
 import mk.ukim.finki.wp.chekalna.model.exceptions.ConsultationNotFound;
 import mk.ukim.finki.wp.chekalna.repository.ConsultationRepository;
 import mk.ukim.finki.wp.chekalna.repository.ProfessorRepository;
 import mk.ukim.finki.wp.chekalna.service.interfaces.ConsultationService;
+import mk.ukim.finki.wp.chekalna.service.interfaces.ProfessorService;
 import org.springframework.stereotype.Service;
 
 import java.time.DayOfWeek;
-import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.LongSummaryStatistics;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @AllArgsConstructor
@@ -28,10 +27,11 @@ public class ConsultationServiceImpl implements ConsultationService {
 
     private final ConsultationRepository consultationRepository;
     private final ProfessorRepository professorRepository;
+    private final ProfessorService professorService;
 
     public Consultation saveConsultation(Consultation consultation, Integer numberOfStudents) {
         for (int i = 1; i <= numberOfStudents; i++) {
-            StringBuilder stringBuilder=new StringBuilder();
+            StringBuilder stringBuilder = new StringBuilder();
             stringBuilder.append(consultation.getType().name().charAt(0)).append(i);
             Number number = new Number();
             number.setNumber(stringBuilder.toString().toUpperCase());
@@ -70,8 +70,8 @@ public class ConsultationServiceImpl implements ConsultationService {
 
     @Override
     public void calcualteAverageWaitingTime(Long id) {
-        Consultation currentConsultation=findById(id).orElseThrow(() -> new ConsultationNotFound("Consultation not found with id: " + id));
-        LongSummaryStatistics summaryStatistics=currentConsultation.getWaitingTime().stream().mapToLong(i->i.calculateTime()).summaryStatistics();
+        Consultation currentConsultation = findById(id).orElseThrow(() -> new ConsultationNotFound("Consultation not found with id: " + id));
+        LongSummaryStatistics summaryStatistics = currentConsultation.getWaitingTime().stream().mapToLong(i -> i.calculateTime()).summaryStatistics();
         currentConsultation.setTimeTaken((int) Math.floor(summaryStatistics.getAverage()));
         consultationRepository.save(currentConsultation);
     }
@@ -87,11 +87,27 @@ public class ConsultationServiceImpl implements ConsultationService {
 
     public boolean nextInQueue(int id) {
         var consultation = this.getConsultationById(id);
-        if(consultation.getReservations().size() > 0)
+        if (consultation.getReservations().size() > 0)
             consultation.getReservations().remove(0);
         consultationRepository.save(consultation);
         return true;
     }
+
+    @Override
+    public void copyConsultation(String professorId, Integer maxStudents, String location, ConsultationType type, LocalDate oneTimeDate, DayOfWeek weeklyDayOfWeek, LocalTime startTime, LocalTime endTime) {
+        Consultation consultation=new Consultation();
+        Professor professor = professorService.getProfessorById(professorId);
+        consultation.setProfessor(professor);
+        consultation.setLocation(location);
+        consultation.setType(type);
+        consultation.setOneTimeDate(oneTimeDate);
+        consultation.setWeeklyDayOfWeek(weeklyDayOfWeek);
+        consultation.setStartTime(startTime);
+        consultation.setEndTime(endTime);
+        saveConsultation(consultation,maxStudents);
+    }
+
+
 }
 
 
