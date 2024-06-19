@@ -3,8 +3,10 @@ package mk.ukim.finki.wp.chekalna.web.controller;
 import lombok.AllArgsConstructor;
 import mk.ukim.finki.wp.chekalna.model.Consultation;
 import mk.ukim.finki.wp.chekalna.model.Professor;
+import mk.ukim.finki.wp.chekalna.model.Reservation;
 import mk.ukim.finki.wp.chekalna.model.Room;
 import mk.ukim.finki.wp.chekalna.model.enums.ConsultationType;
+import mk.ukim.finki.wp.chekalna.repository.ReservationRepository;
 import mk.ukim.finki.wp.chekalna.service.interfaces.ConsultationService;
 import mk.ukim.finki.wp.chekalna.service.interfaces.ProfessorService;
 import mk.ukim.finki.wp.chekalna.service.interfaces.RoomService;
@@ -26,6 +28,7 @@ public class ProfessorsController {
     private final ProfessorService professorService;
 
     private final ConsultationService consultationService;
+    private final ReservationRepository reservationRepository;
 
     private final RoomService roomService;
 
@@ -37,7 +40,7 @@ public class ProfessorsController {
         } else {
             professors = professorService.getAllProfessors();
         }
-//        consultationService.calcualteAverageWaitingTime();
+
         Map<DayOfWeek, String> dayOfWeekMap = Map.of(
                 DayOfWeek.MONDAY, "Понеделник",
                 DayOfWeek.TUESDAY, "Вторник",

@@ -24,9 +24,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -133,6 +131,8 @@ public class ConsultationController {
                 DayOfWeek.SUNDAY, "Недела"
         );
 
+
+
         model.addAttribute("username", username);
         model.addAttribute("consultations", consultations);
         model.addAttribute("today", LocalDate.now());
@@ -145,56 +145,58 @@ public class ConsultationController {
     @GetMapping("/consultations/update/{id}/{numberId}/{username}")
     public String updateQueue(@PathVariable int id, @PathVariable int numberId, @PathVariable String username, Model model) {
         Number currentNumber = numberService.findById((long) numberId)
-                    .orElseThrow(() -> new RuntimeException("Number not found!"));
+                .orElseThrow(() -> new RuntimeException("Number not found!"));
         Reservation currentReservation = reservationService.findbyNumberId((long) numberId);
         if (currentReservation != null) {
-                currentNumber.setStatus(NumberStatus.FINISHED);
-                numberRepository.save(currentNumber);
+            currentNumber.setStatus(NumberStatus.FINISHED);
+            numberRepository.save(currentNumber);
 
-                currentReservation.setEndDate(LocalTime.now());
-                currentReservation.setNumber(currentNumber);
-                reservationService.save(currentReservation);
+            currentReservation.setEndDate(LocalTime.now());
+            currentReservation.setNumber(currentNumber);
+            reservationService.save(currentReservation);
 
-                ///
-                Consultation currentConsultion=this.consultationService.findById((long)id).orElseThrow(()->new RuntimeException(""));
+            ///
+            Consultation currentConsultion = this.consultationService.findById((long) id).orElseThrow(() -> new RuntimeException(""));
 
-                List<TimeTaken>timeTakenList=currentConsultion.getWaitingTime();
-                timeTakenList.add(timeTakenRepository.save(new TimeTaken(currentReservation.getStartDate(),currentReservation.getEndDate())));
-                currentConsultion.setWaitingTime(timeTakenList);
-                this.consultationRepository.save(currentConsultion);
-                this.consultationService.calcualteAverageWaitingTime(currentConsultion.getId());
+            List<TimeTaken> timeTakenList = currentConsultion.getWaitingTime();
+            timeTakenList.add(timeTakenRepository.save(new TimeTaken(currentReservation.getStartDate(), currentReservation.getEndDate())));
+            currentConsultion.setWaitingTime(timeTakenList);
+            this.consultationRepository.save(currentConsultion);
+            this.consultationService.calcualteAverageWaitingTime(currentConsultion.getId());
 
-                this.consultationService.nextInQueue(id);
-                var consultations = consultationService.getConsultationsByProfessor(username);
-                Consultation consultation = this.consultationService.getConsultationById(id);
-                if (!consultation.getReservations().isEmpty()) {
-                    Reservation nextReservation = consultation.getReservations().get(0);
-                    nextReservation.setStartDate(LocalTime.now());
-                    this.reservationRepository.save(nextReservation);
-                } else {
-                    model.addAttribute("message", "No more reservations in queue.");
-                }
-
-          Map<DayOfWeek, String> dayOfWeekMap = Map.of(
-                DayOfWeek.MONDAY, "Понеделник",
-                DayOfWeek.TUESDAY, "Вторник",
-                DayOfWeek.WEDNESDAY, "Среда",
-                DayOfWeek.THURSDAY, "Четврток",
-                DayOfWeek.FRIDAY, "Петок",
-                DayOfWeek.SATURDAY, "Сабота",
-                DayOfWeek.SUNDAY, "Недела"
-          );
-
-          model.addAttribute("username", username);
-          model.addAttribute("consultations", consultations);
-          model.addAttribute("today", LocalDate.now());
-          model.addAttribute("timeNow", LocalTime.now());
-          model.addAttribute("daysOfWeek", dayOfWeekMap);
-          } else {
-                model.addAttribute("error", "Reservation not found for the given number ID.");
+            this.consultationService.nextInQueue(id);
+            var consultations = consultationService.getConsultationsByProfessor(username);
+            Consultation consultation = this.consultationService.getConsultationById(id);
+            if (!consultation.getReservations().isEmpty()) {
+                Reservation nextReservation = consultation.getReservations().get(0);
+                nextReservation.setStartDate(LocalTime.now());
+                this.reservationRepository.save(nextReservation);
+            } else {
+                model.addAttribute("message", "No more reservations in queue.");
             }
 
-        return "my-consultations";
+            Map<DayOfWeek, String> dayOfWeekMap = Map.of(
+                    DayOfWeek.MONDAY, "Понеделник",
+                    DayOfWeek.TUESDAY, "Вторник",
+                    DayOfWeek.WEDNESDAY, "Среда",
+                    DayOfWeek.THURSDAY, "Четврток",
+                    DayOfWeek.FRIDAY, "Петок",
+                    DayOfWeek.SATURDAY, "Сабота",
+                    DayOfWeek.SUNDAY, "Недела"
+            );
+
+
+            model.addAttribute("username", username);
+            model.addAttribute("consultations", consultations);
+            model.addAttribute("today", LocalDate.now());
+            model.addAttribute("timeNow", LocalTime.now());
+            model.addAttribute("daysOfWeek", dayOfWeekMap);
+
+        } else {
+            model.addAttribute("error", "Reservation not found for the given number ID.");
+        }
+
+        return "redirect:/consultations/"+username;
     }
 }
 

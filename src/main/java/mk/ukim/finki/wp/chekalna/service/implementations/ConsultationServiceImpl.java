@@ -31,8 +31,10 @@ public class ConsultationServiceImpl implements ConsultationService {
 
     public Consultation saveConsultation(Consultation consultation, Integer numberOfStudents) {
         for (int i = 1; i <= numberOfStudents; i++) {
+            StringBuilder stringBuilder=new StringBuilder();
+            stringBuilder.append(consultation.getType().name().charAt(0)).append(i);
             Number number = new Number();
-            number.setNumber(i);
+            number.setNumber(stringBuilder.toString().toUpperCase());
             number.setStatus(NumberStatus.PENDING);
             consultation.addNumber(number);
         }

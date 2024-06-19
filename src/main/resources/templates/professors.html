@@ -73,7 +73,7 @@
                                         </div>
                                         <div class="col-12" th:if="${consultation.startTime.isBefore(timeNow) && consultation.oneTimeDate.isEqual(today) && consultation.getReservations().size() > 0}">
                                             <h6>На ред: </h6>
-                                            <h6 th:text="${consultation.getReservations().get(0).getNumber().getId()}"></h6>
+                                            <h6 th:text="${consultation.getReservations().get(0).getNumber().getNumber()}"></h6>
                                         </div>
                                         <th:block th:if="${consultation.timeTaken>0}">
                                             <div class="col-12">

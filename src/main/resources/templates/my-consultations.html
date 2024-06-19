@@ -59,10 +59,11 @@
                         </a>
                         <div th:if="${consultation.startTime.isBefore(timeNow) && consultation.oneTimeDate.isEqual(today) && consultation.getReservations().size() > 0}">
                             <h6>На ред: </h6>
-                            <h6 th:text="${consultation.getReservations().get(0).getNumber().getId()}"></h6>
+                            <h6 th:text="${consultation.getReservations().get(0).getNumber().getNumber()}"></h6>
                             <a th:href="@{/consultations/update/{id}/{numberId}/{professor}(id=${consultation.id}, professor=${consultation.professor.id}, numberId=${consultation.getReservations().get(0).getNumber().getId()})}"
                             style="background-color: #212529;" class="btn text-white">Следен</a>
                         </div>
+
                         <div th:if="${consultation.getReservations().size() <= 0}">
                             <h6>Нема резервации</h6>
                         </div>
