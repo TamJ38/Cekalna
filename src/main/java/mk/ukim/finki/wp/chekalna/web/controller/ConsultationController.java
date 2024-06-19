@@ -118,7 +118,7 @@ public class ConsultationController {
         return "redirect:/professors";
     }
 
-    @GetMapping("/admin/consultations/{username}")
+    @GetMapping("/consultations/{username}")
     public String myConsultationsView(@PathVariable String username, Model model) {
         var consultations = consultationService.getConsultationsByProfessor(username);
 
@@ -141,27 +141,20 @@ public class ConsultationController {
         return "my-consultations";
     }
 
-    @GetMapping("/admin/consultations/update/{id}/{numberId}")
-    public String updateQueue(@PathVariable int id, @PathVariable int numberId, Principal principal, Model model) {
-        if (principal != null) {
-            Number currentNumber = numberService.findById((long) numberId)
+    @GetMapping("/consultations/update/{id}/{numberId}/{username}")
+    public String updateQueue(@PathVariable int id, @PathVariable int numberId, @PathVariable String username, Model model) {
+        Number currentNumber = numberService.findById((long) numberId)
                     .orElseThrow(() -> new RuntimeException("Number not found!"));
-            Reservation currentReservation = reservationService.findbyNumberId((long) numberId);
-
-            if (currentReservation != null) {
+        Reservation currentReservation = reservationService.findbyNumberId((long) numberId);
+        if (currentReservation != null) {
                 currentNumber.setStatus(NumberStatus.FINISHED);
                 numberRepository.save(currentNumber);
 
                 currentReservation.setEndDate(LocalTime.now());
                 currentReservation.setNumber(currentNumber);
                 reservationService.save(currentReservation);
-
                 this.consultationService.nextInQueue(id);
-
-                var username = principal.getName();
                 var consultations = consultationService.getConsultationsByProfessor(username);
-
-                // Check if there are reservations before accessing them
                 Consultation consultation = this.consultationService.getConsultationById(id);
                 if (!consultation.getReservations().isEmpty()) {
                     Reservation nextReservation = consultation.getReservations().get(0);
@@ -171,22 +164,22 @@ public class ConsultationController {
                     model.addAttribute("message", "No more reservations in queue.");
                 }
 
-                Map<DayOfWeek, String> dayOfWeekMap = Map.of(
-                        DayOfWeek.MONDAY, "Понеделник",
-                        DayOfWeek.TUESDAY, "Вторник",
-                        DayOfWeek.WEDNESDAY, "Среда",
-                        DayOfWeek.THURSDAY, "Четврток",
-                        DayOfWeek.FRIDAY, "Петок",
-                        DayOfWeek.SATURDAY, "Сабота",
-                        DayOfWeek.SUNDAY, "Недела"
-                );
+          Map<DayOfWeek, String> dayOfWeekMap = Map.of(
+                DayOfWeek.MONDAY, "Понеделник",
+                DayOfWeek.TUESDAY, "Вторник",
+                DayOfWeek.WEDNESDAY, "Среда",
+                DayOfWeek.THURSDAY, "Четврток",
+                DayOfWeek.FRIDAY, "Петок",
+                DayOfWeek.SATURDAY, "Сабота",
+                DayOfWeek.SUNDAY, "Недела"
+          );
 
-                model.addAttribute("username", username);
-                model.addAttribute("consultations", consultations);
-                model.addAttribute("today", LocalDate.now());
-                model.addAttribute("timeNow", LocalTime.now());
-                model.addAttribute("daysOfWeek", dayOfWeekMap);
-            } else {
+          model.addAttribute("username", username);
+          model.addAttribute("consultations", consultations);
+          model.addAttribute("today", LocalDate.now());
+          model.addAttribute("timeNow", LocalTime.now());
+          model.addAttribute("daysOfWeek", dayOfWeekMap);
+          } else {
                 model.addAttribute("error", "Reservation not found for the given number ID.");
             }
         }
