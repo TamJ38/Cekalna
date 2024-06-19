@@ -144,57 +144,55 @@ public class ConsultationController {
     @GetMapping("/admin/consultations/update/{id}/{numberId}")
     public String updateQueue(@PathVariable int id, @PathVariable int numberId, Principal principal, Model model) {
         if (principal != null) {
-
-
-            // finds current number and reservation
-            Number currentNumber = numberService.findById((long) numberId).orElseThrow(() -> new RuntimeException("Number not found!"));
+            Number currentNumber = numberService.findById((long) numberId)
+                    .orElseThrow(() -> new RuntimeException("Number not found!"));
             Reservation currentReservation = reservationService.findbyNumberId((long) numberId);
 
+            if (currentReservation != null) {
+                currentNumber.setStatus(NumberStatus.FINISHED);
+                numberRepository.save(currentNumber);
 
-            // updates number
-            currentNumber.setStatus(NumberStatus.FINISHED);
-            numberRepository.save(currentNumber);
+                currentReservation.setEndDate(LocalTime.now());
+                currentReservation.setNumber(currentNumber);
+                reservationService.save(currentReservation);
 
+                this.consultationService.nextInQueue(id);
 
-            // startDate for the first one is always the start of the consultation, so we update the end time
-            currentReservation.setEndDate(LocalTime.now());
-            currentReservation.setNumber(currentNumber);
+                var username = principal.getName();
+                var consultations = consultationService.getConsultationsByProfessor(username);
 
-            reservationService.save(currentReservation);
+                // Check if there are reservations before accessing them
+                Consultation consultation = this.consultationService.getConsultationById(id);
+                if (!consultation.getReservations().isEmpty()) {
+                    Reservation nextReservation = consultation.getReservations().get(0);
+                    nextReservation.setStartDate(LocalTime.now());
+                    this.reservationRepository.save(nextReservation);
+                } else {
+                    model.addAttribute("message", "No more reservations in queue.");
+                }
 
-            // updates average waiting time
-            this.consultationService.calcualteAverageWaitingTime();
+                Map<DayOfWeek, String> dayOfWeekMap = Map.of(
+                        DayOfWeek.MONDAY, "Понеделник",
+                        DayOfWeek.TUESDAY, "Вторник",
+                        DayOfWeek.WEDNESDAY, "Среда",
+                        DayOfWeek.THURSDAY, "Четврток",
+                        DayOfWeek.FRIDAY, "Петок",
+                        DayOfWeek.SATURDAY, "Сабота",
+                        DayOfWeek.SUNDAY, "Недела"
+                );
 
-            // deletes the current reservation/finished reservation
-            this.consultationService.nextInQueue(id);
-            var username = principal.getName();
-            var consultations = consultationService.getConsultationsByProfessor(username);
-
-            // gets the next in line reservation, updates the startDate, later on will update the endDate and calculate average waaiting time
-            Reservation nextReservation = this.consultationService.getConsultationById(id).getReservations().get(0);
-            nextReservation.setStartDate(LocalTime.now());
-
-            this.reservationRepository.save(nextReservation);
-
-
-            Map<DayOfWeek, String> dayOfWeekMap = Map.of(
-                    DayOfWeek.MONDAY, "Понеделник",
-                    DayOfWeek.TUESDAY, "Вторник",
-                    DayOfWeek.WEDNESDAY, "Среда",
-                    DayOfWeek.THURSDAY, "Четврток",
-                    DayOfWeek.FRIDAY, "Петок",
-                    DayOfWeek.SATURDAY, "Сабота",
-                    DayOfWeek.SUNDAY, "Недела"
-            );
-
-            model.addAttribute("username", username);
-            model.addAttribute("consultations", consultations);
-            model.addAttribute("today", LocalDate.now());
-            model.addAttribute("timeNow", LocalTime.now());
-            model.addAttribute("daysOfWeek", dayOfWeekMap);
+                model.addAttribute("username", username);
+                model.addAttribute("consultations", consultations);
+                model.addAttribute("today", LocalDate.now());
+                model.addAttribute("timeNow", LocalTime.now());
+                model.addAttribute("daysOfWeek", dayOfWeekMap);
+            } else {
+                model.addAttribute("error", "Reservation not found for the given number ID.");
+            }
         }
 
         return "my-consultations";
     }
 }
+
 
