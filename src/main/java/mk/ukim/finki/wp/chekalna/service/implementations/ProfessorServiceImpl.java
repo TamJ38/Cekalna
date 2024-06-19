@@ -10,6 +10,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -31,6 +32,11 @@ public class ProfessorServiceImpl implements ProfessorService {
 
     public List<Professor> findProfessorsByName(String name) {
         return professorRepository.findByNameContainingIgnoreCase(name);
+    }
+
+    @Override
+    public Optional<Professor> findById(String username) {
+        return professorRepository.findById(username);
     }
 
 }
