@@ -20,10 +20,8 @@ public class Number {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Min(0)
-    @Max(50)
     @Column(nullable = false)
-    private Integer number;
+    private String number;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)

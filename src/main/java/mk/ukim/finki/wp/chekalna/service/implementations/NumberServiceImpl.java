@@ -47,6 +47,7 @@ public class NumberServiceImpl implements NumberService {
     public void deleteByid(List<Long> ids) {
         this.numberRepository.deleteAllById(ids);
     }
+
     public List<Number> findByConsultationId(Long consultationId) {
         return numberRepository.findByConsultationIdOrderByNumberAsc(consultationId);
     }
@@ -57,8 +58,10 @@ public class NumberServiceImpl implements NumberService {
                 .orElseThrow(() -> new IllegalArgumentException("Invalid consultation Id: " + consultationId));
         List<Number> numberList = new ArrayList<>();
         for (int i = 1; i <= consultation.getMaxStudents(); i++) {
+            StringBuilder stringBuilder = new StringBuilder();
+            stringBuilder.append(consultation.getType().name().charAt(0)).append(i);
             Number newNumber = new Number();
-            newNumber.setNumber(i);
+            newNumber.setNumber(stringBuilder.toString().toUpperCase());
             newNumber.setConsultation(consultation);
             newNumber.setStatus(NumberStatus.PENDING);
             numberList.add(newNumber);

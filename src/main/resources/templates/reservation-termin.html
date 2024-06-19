@@ -55,7 +55,7 @@
                     <div th:class="number-card"
                          th:classappend="${number.status == T(mk.ukim.finki.wp.chekalna.model.enums.NumberStatus).APPROVED ? 'disabled' : ''}"
                          th:attr="data-id=${number.id}"
-                         th:text="${number.id}"
+                         th:text="${number.getNumber()}"
                          onclick="selectNumber(this.getAttribute('data-id'))"></div>
 
                     </div>

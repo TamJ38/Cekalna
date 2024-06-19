@@ -73,7 +73,7 @@
                                         </div>
                                         <div class="col-12" th:if="${consultation.startTime.isBefore(timeNow) && consultation.oneTimeDate.isEqual(today) && consultation.getReservations().size() > 0}">
                                             <h6>На ред: </h6>
-                                            <h6 th:text="${consultation.getReservations().get(0).getNumber().getId()}"></h6>
+                                            <h6 th:text="${consultation.getReservations().get(0).getNumber().getNumber()}"></h6>
                                         </div>
                                         <th:block th:if="${consultation.timeTaken>0}">
                                             <div class="col-12">
@@ -88,16 +88,6 @@
                             <!--                            hasAnyRole -> treba da stoi samo professor, no dodadov admin za da mozeme da implementirame, so role_admin se najavuvame-->
                             <div class="col-md-4 d-flex justify-content-lg-start align-items-center"
                                  style="width: 600px">
-                                <form th:method="post"
-                                      th:action="@{'/consultations/delete/{id}' (id=${consultation.id})}"
-                                      sec:authorize="hasAnyRole('ADMIN', 'PROFESSOR')" style="display: inline;">
-                                    <button type="submit" class="btn text-white me-2"
-                                            style="background-color: #212529;">Избриши термин за консултација
-                                    </button>
-                                </form>
-                                <a th:href="@{/consultations/form(professorId=${professor.id}, consultationId=${consultation.id})}"
-                                   class="btn text-white" style="background-color: #212529;"
-                                   sec:authorize="hasAnyRole('ADMIN', 'PROFESSOR')">Измени термин за консултација</a>
                                 <a th:href="@{/reservations/consultation/{id}(id=${consultation.id})}"
                                    class="btn text-white" style="background-color: #212529;"
                                    sec:authorize="hasAnyRole( 'ROLE_GUEST')">Резервирај термин</a>
@@ -108,11 +98,6 @@
                     <div th:unless="${not #lists.isEmpty(professor.consultations)}">
                         Нема закажани консултации
                     </div>
-
-                    <!--                    dodavanje na termin za konsultacii-->
-                    <a th:href="@{/consultations/form(professorId=${professor.id})}" class="btn text-white"
-                       style="background-color: #212529" sec:authorize="hasAnyRole('PROFESSOR', 'ADMIN')">Додади термин
-                        за консултација</a>
                 </div>
             </div>
         </div>

@@ -30,4 +30,6 @@ public interface ConsultationService {
     Consultation getConsultationById(int id);
 
     boolean nextInQueue(int id);
+
+    void copyConsultation(String professorId, Integer maxStudents, String location, ConsultationType type, LocalDate oneTimeDate, DayOfWeek weeklyDayOfWeek, LocalTime startTime, LocalTime endTime);
 }
