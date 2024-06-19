@@ -152,13 +152,13 @@ public class ConsultationController {
 
             Reservation reservation = reservationService.findbyNumberId((long) numberId);
 
-            reservation.setEndDate(LocalTime.now());
-
-            reservationService.save(reservation);
-
             currentNumber.setStatus(NumberStatus.FINISHED);
             numberRepository.save(currentNumber);
 
+            reservation.setEndDate(LocalTime.now());
+            reservation.setNumber(currentNumber);
+
+            reservationService.save(reservation);
 
             Map<DayOfWeek, String> dayOfWeekMap = Map.of(
                     DayOfWeek.MONDAY, "Понеделник",
