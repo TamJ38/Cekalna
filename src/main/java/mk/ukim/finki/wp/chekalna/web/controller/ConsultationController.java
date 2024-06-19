@@ -88,7 +88,7 @@ public class ConsultationController {
         Professor professor = professorService.getProfessorById(professorId);
         consultation.setProfessor(professor);
         consultationService.saveConsultation(consultation, maxStudents);
-        return "redirect:/professors";
+        return "redirect:/consultations/" + professor.getId();
     }
 
 
@@ -102,7 +102,12 @@ public class ConsultationController {
                                      @RequestParam LocalTime endTime,
                                      Model model) {
         consultationService.updateConsultation(id, location, type, oneTimeDate, weeklyDayOfWeek, startTime, endTime);
-        return "redirect:/professors";
+        final Professor[] professor = {null};
+        consultationService.findById(id).ifPresent(consultation -> {
+            professor[0] = consultation.getProfessor();
+        });
+
+        return "redirect:/consultations" + professor[0].getId();
     }
 
     @PostMapping("/consultations/copy/{id}")
@@ -128,27 +133,29 @@ public class ConsultationController {
 
     @PostMapping("/consultations/copy")
     public String copyModel(
-                            @RequestParam("professorId") String professorId,
-                            @RequestParam("maxStudents") Integer maxStudents,
-                            @RequestParam String location,
-                            @RequestParam ConsultationType type,
-                            @RequestParam(required = false) LocalDate oneTimeDate,
-                            @RequestParam DayOfWeek weeklyDayOfWeek,
-                            @RequestParam LocalTime startTime,
-                            @RequestParam LocalTime endTime) {
+            @RequestParam("professorId") String professorId,
+            @RequestParam("maxStudents") Integer maxStudents,
+            @RequestParam String location,
+            @RequestParam ConsultationType type,
+            @RequestParam(required = false) LocalDate oneTimeDate,
+            @RequestParam DayOfWeek weeklyDayOfWeek,
+            @RequestParam LocalTime startTime,
+            @RequestParam LocalTime endTime) {
 
 
-        consultationService.copyConsultation(professorId,maxStudents,location,type,oneTimeDate,weeklyDayOfWeek,startTime,endTime);
-        return "redirect:/professors";
+        consultationService.copyConsultation(professorId, maxStudents, location, type, oneTimeDate, weeklyDayOfWeek, startTime, endTime);
+        return "redirect:/consultations/" + professorService.findById(professorId).get().getId();
     }
 
     @PostMapping("/consultations/delete/{id}")
     public String deleteConsultation(@PathVariable("id") Long id) {
+        final Professor[] professor = {null};
         consultationService.findById(id).ifPresent(consultation -> {
             consultationService.deleteConsultation(id);
+            professor[0] = consultation.getProfessor();
         });
 
-        return "redirect:/professors";
+        return "redirect:/consultations/" + professor[0].getId();
     }
 
     @GetMapping("/consultations/{username}")
@@ -164,8 +171,7 @@ public class ConsultationController {
                 DayOfWeek.SATURDAY, "Сабота",
                 DayOfWeek.SUNDAY, "Недела"
         );
-
-
+        professorService.findById(username).ifPresent(i -> model.addAttribute("professor", i));
         model.addAttribute("username", username);
         model.addAttribute("consultations", consultations);
         model.addAttribute("today", LocalDate.now());
