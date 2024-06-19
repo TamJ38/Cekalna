@@ -115,7 +115,7 @@ public class ConsultationController {
         return "redirect:/professors";
     }
 
-    @GetMapping("/admin/consultations/{username}")
+    @GetMapping("/consultations/{username}")
     public String myConsultationsView(@PathVariable String username, Model model) {
         var consultations = consultationService.getConsultationsByProfessor(username);
 
@@ -138,29 +138,26 @@ public class ConsultationController {
         return "my-consultations";
     }
 
-    @GetMapping("/admin/consultations/update/{id}")
-    public String updateQueue(@PathVariable int id, Principal principal, Model model) {
-        if (principal != null) {
-            this.consultationService.nextInQueue(id);
-            var username = principal.getName();
-            var consultations = consultationService.getConsultationsByProfessor(username);
+    @GetMapping("/consultations/update/{id}/{username}")
+    public String updateQueue(@PathVariable int id, @PathVariable String username, Model model) {
+        this.consultationService.nextInQueue(id);
+        var consultations = consultationService.getConsultationsByProfessor(username);
 
-            Map<DayOfWeek, String> dayOfWeekMap = Map.of(
-                    DayOfWeek.MONDAY, "Понеделник",
-                    DayOfWeek.TUESDAY, "Вторник",
-                    DayOfWeek.WEDNESDAY, "Среда",
-                    DayOfWeek.THURSDAY, "Четврток",
-                    DayOfWeek.FRIDAY, "Петок",
-                    DayOfWeek.SATURDAY, "Сабота",
-                    DayOfWeek.SUNDAY, "Недела"
-            );
+        Map<DayOfWeek, String> dayOfWeekMap = Map.of(
+                DayOfWeek.MONDAY, "Понеделник",
+                DayOfWeek.TUESDAY, "Вторник",
+                DayOfWeek.WEDNESDAY, "Среда",
+                DayOfWeek.THURSDAY, "Четврток",
+                DayOfWeek.FRIDAY, "Петок",
+                DayOfWeek.SATURDAY, "Сабота",
+                DayOfWeek.SUNDAY, "Недела"
+        );
 
-            model.addAttribute("username", username);
-            model.addAttribute("consultations", consultations);
-            model.addAttribute("today", LocalDate.now());
-            model.addAttribute("timeNow", LocalTime.now());
-            model.addAttribute("daysOfWeek", dayOfWeekMap);
-        }
+        model.addAttribute("username", username);
+        model.addAttribute("consultations", consultations);
+        model.addAttribute("today", LocalDate.now());
+        model.addAttribute("timeNow", LocalTime.now());
+        model.addAttribute("daysOfWeek", dayOfWeekMap);
 
         return "my-consultations";
     }
