@@ -2,11 +2,13 @@ package mk.ukim.finki.wp.chekalna.web.controller;
 
 import lombok.AllArgsConstructor;
 import mk.ukim.finki.wp.chekalna.model.Consultation;
+import mk.ukim.finki.wp.chekalna.model.Number;
 import mk.ukim.finki.wp.chekalna.model.Professor;
 import mk.ukim.finki.wp.chekalna.model.Reservation;
 import mk.ukim.finki.wp.chekalna.model.Room;
 import mk.ukim.finki.wp.chekalna.model.enums.ConsultationType;
 import mk.ukim.finki.wp.chekalna.model.enums.NumberStatus;
+import mk.ukim.finki.wp.chekalna.repository.NumberRepository;
 import mk.ukim.finki.wp.chekalna.repository.ReservationRepository;
 import mk.ukim.finki.wp.chekalna.service.interfaces.*;
 import org.springframework.http.HttpStatus;
@@ -39,6 +41,7 @@ public class ConsultationController {
     private final ReservationRepository reservationRepository;
     private final NumberService numberService;
     private final RoomService roomService;
+    private final NumberRepository numberRepository;
 
 
     @GetMapping("/consultations/form")
@@ -138,12 +141,24 @@ public class ConsultationController {
         return "my-consultations";
     }
 
-    @GetMapping("/admin/consultations/update/{id}")
-    public String updateQueue(@PathVariable int id, Principal principal, Model model) {
+    @GetMapping("/admin/consultations/update/{id}/{numberId}")
+    public String updateQueue(@PathVariable int id, @PathVariable int numberId, Principal principal, Model model) {
         if (principal != null) {
             this.consultationService.nextInQueue(id);
             var username = principal.getName();
             var consultations = consultationService.getConsultationsByProfessor(username);
+
+            Number currentNumber = numberService.findById((long) numberId).orElseThrow(() -> new RuntimeException("Number not found!"));
+
+            Reservation reservation = reservationService.findbyNumberId((long) numberId);
+
+            reservation.setEndDate(LocalTime.now());
+
+            reservationService.save(reservation);
+
+            currentNumber.setStatus(NumberStatus.FINISHED);
+            numberRepository.save(currentNumber);
+
 
             Map<DayOfWeek, String> dayOfWeekMap = Map.of(
                     DayOfWeek.MONDAY, "Понеделник",
