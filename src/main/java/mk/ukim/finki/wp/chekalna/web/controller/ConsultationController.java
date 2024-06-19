@@ -101,16 +101,50 @@ public class ConsultationController {
                                      @RequestParam LocalTime startTime,
                                      @RequestParam LocalTime endTime,
                                      Model model) {
-        // TO DO - it aint working if there's reservations
         consultationService.updateConsultation(id, location, type, oneTimeDate, weeklyDayOfWeek, startTime, endTime);
         return "redirect:/professors";
     }
 
+    @PostMapping("/consultations/copy/{id}")
+    public String copyConsultation(@PathVariable Long id, Model model) {
+        Map<DayOfWeek, String> dayOfWeekMap = Map.of(
+                DayOfWeek.MONDAY, "Понеделник",
+                DayOfWeek.TUESDAY, "Вторник",
+                DayOfWeek.WEDNESDAY, "Среда",
+                DayOfWeek.THURSDAY, "Четврток",
+                DayOfWeek.FRIDAY, "Петок",
+                DayOfWeek.SATURDAY, "Сабота",
+                DayOfWeek.SUNDAY, "Недела"
+        );
+        String formattedOneTimeDate = DateTimeFormatter.ofPattern("yyyy-MM-dd").format(consultationService.findById(id).get().getOneTimeDate());
+        model.addAttribute("formattedOneTimeDate", formattedOneTimeDate);
+        model.addAttribute("consultationTypes", ConsultationType.values());
+        model.addAttribute("daysOfWeek", dayOfWeekMap);
+        model.addAttribute("consultation", consultationService.findById(id).get());
+        model.addAttribute("isCopy", true);
+
+        return "manage-consultation-form";
+    }
+
+    @PostMapping("/consultations/copy")
+    public String copyModel(
+                            @RequestParam("professorId") String professorId,
+                            @RequestParam("maxStudents") Integer maxStudents,
+                            @RequestParam String location,
+                            @RequestParam ConsultationType type,
+                            @RequestParam(required = false) LocalDate oneTimeDate,
+                            @RequestParam DayOfWeek weeklyDayOfWeek,
+                            @RequestParam LocalTime startTime,
+                            @RequestParam LocalTime endTime) {
+
+
+        consultationService.copyConsultation(professorId,maxStudents,location,type,oneTimeDate,weeklyDayOfWeek,startTime,endTime);
+        return "redirect:/professors";
+    }
 
     @PostMapping("/consultations/delete/{id}")
     public String deleteConsultation(@PathVariable("id") Long id) {
         consultationService.findById(id).ifPresent(consultation -> {
-            // TO DO - it aint working if there's reservations
             consultationService.deleteConsultation(id);
         });
 
@@ -130,7 +164,6 @@ public class ConsultationController {
                 DayOfWeek.SATURDAY, "Сабота",
                 DayOfWeek.SUNDAY, "Недела"
         );
-
 
 
         model.addAttribute("username", username);
@@ -196,7 +229,7 @@ public class ConsultationController {
             model.addAttribute("error", "Reservation not found for the given number ID.");
         }
 
-        return "redirect:/consultations/"+username;
+        return "redirect:/consultations/" + username;
     }
 }
 
