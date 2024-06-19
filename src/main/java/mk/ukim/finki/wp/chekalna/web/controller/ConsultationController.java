@@ -182,7 +182,6 @@ public class ConsultationController {
           } else {
                 model.addAttribute("error", "Reservation not found for the given number ID.");
             }
-        }
 
         return "my-consultations";
     }
