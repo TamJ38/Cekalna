@@ -11,9 +11,10 @@
 <body>
 <div th:replace="~{fragments/header :: header}"></div>
 <div class="container mt-4">
-    <div th:if="${reservations.size() <= 0}" class="text-center">
+    <div th:if="${reservations.size() <= 0}" class="text-center alert alert-warning">
         <h6>Немаш резервации!</h6>
     </div>
+
         <div class="row">
             <div th:each="reservation : ${reservations}" class="col-md-4 mb-3">
                 <div class="card mb-3">
