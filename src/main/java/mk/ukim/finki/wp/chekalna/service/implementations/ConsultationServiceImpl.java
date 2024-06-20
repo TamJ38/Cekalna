@@ -53,7 +53,7 @@ public class ConsultationServiceImpl implements ConsultationService {
         consultationRepository.deleteById(id);
     }
 
-    public Consultation updateConsultation(Long id, String location, ConsultationType type, LocalDate oneTimeDate, DayOfWeek weeklyDayOfWeek, LocalTime startTime, LocalTime endTime) {
+    public Consultation updateConsultation(Long id, String location, ConsultationType type, LocalDate oneTimeDate, DayOfWeek weeklyDayOfWeek, LocalTime startTime, LocalTime endTime, Integer maxStudents) {
         Consultation consultation = consultationRepository.findById(id)
                 .orElseThrow(() -> new ConsultationNotFound("Consultation not found with id: " + id));
 
@@ -63,6 +63,7 @@ public class ConsultationServiceImpl implements ConsultationService {
         consultation.setWeeklyDayOfWeek(weeklyDayOfWeek);
         consultation.setStartTime(startTime);
         consultation.setEndTime(endTime);
+        consultation.setMaxStudents(maxStudents);
 
         consultationRepository.save(consultation);
         return consultation;

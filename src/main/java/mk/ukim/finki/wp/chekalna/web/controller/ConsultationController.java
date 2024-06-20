@@ -100,8 +100,8 @@ public class ConsultationController {
                                      @RequestParam DayOfWeek weeklyDayOfWeek,
                                      @RequestParam LocalTime startTime,
                                      @RequestParam LocalTime endTime,
-                                     Model model) {
-        consultationService.updateConsultation(id, location, type, oneTimeDate, weeklyDayOfWeek, startTime, endTime);
+                                     @RequestParam Integer maxStudents) {
+        consultationService.updateConsultation(id, location, type, oneTimeDate, weeklyDayOfWeek, startTime, endTime, maxStudents);
         final Professor[] professor = {null};
         consultationService.findById(id).ifPresent(consultation -> {
             professor[0] = consultation.getProfessor();
