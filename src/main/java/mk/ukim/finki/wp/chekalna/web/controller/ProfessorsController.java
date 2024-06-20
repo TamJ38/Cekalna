@@ -6,6 +6,7 @@ import mk.ukim.finki.wp.chekalna.model.Professor;
 import mk.ukim.finki.wp.chekalna.model.Reservation;
 import mk.ukim.finki.wp.chekalna.model.Room;
 import mk.ukim.finki.wp.chekalna.model.enums.ConsultationType;
+import mk.ukim.finki.wp.chekalna.model.utils.Constants;
 import mk.ukim.finki.wp.chekalna.repository.ReservationRepository;
 import mk.ukim.finki.wp.chekalna.service.interfaces.ConsultationService;
 import mk.ukim.finki.wp.chekalna.service.interfaces.ProfessorService;
@@ -51,16 +52,7 @@ public class ProfessorsController {
             });
         });
 
-        Map<DayOfWeek, String> dayOfWeekMap = Map.of(
-                DayOfWeek.MONDAY, "Понеделник",
-                DayOfWeek.TUESDAY, "Вторник",
-                DayOfWeek.WEDNESDAY, "Среда",
-                DayOfWeek.THURSDAY, "Четврток",
-                DayOfWeek.FRIDAY, "Петок",
-                DayOfWeek.SATURDAY, "Сабота",
-                DayOfWeek.SUNDAY, "Недела"
-        );
-        model.addAttribute("daysOfWeek", dayOfWeekMap);
+        model.addAttribute("daysOfWeek", Constants.dayOfWeekMap);
         model.addAttribute("professors", professors);
         model.addAttribute("consultations", consultationService.findAll());
         model.addAttribute("timeNow", LocalTime.now());

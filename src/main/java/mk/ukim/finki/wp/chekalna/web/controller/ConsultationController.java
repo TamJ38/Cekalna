@@ -5,6 +5,7 @@ import mk.ukim.finki.wp.chekalna.model.*;
 import mk.ukim.finki.wp.chekalna.model.Number;
 import mk.ukim.finki.wp.chekalna.model.enums.ConsultationType;
 import mk.ukim.finki.wp.chekalna.model.enums.NumberStatus;
+import mk.ukim.finki.wp.chekalna.model.utils.Constants;
 import mk.ukim.finki.wp.chekalna.repository.ConsultationRepository;
 import mk.ukim.finki.wp.chekalna.repository.NumberRepository;
 import mk.ukim.finki.wp.chekalna.repository.ReservationRepository;
@@ -47,15 +48,6 @@ public class ConsultationController {
     public String showConsultationForm(@RequestParam("professorId") String professorId,
                                        @RequestParam(value = "consultationId", required = false) Long consultationId,
                                        Model model) {
-        Map<DayOfWeek, String> dayOfWeekMap = Map.of(
-                DayOfWeek.MONDAY, "Понеделник",
-                DayOfWeek.TUESDAY, "Вторник",
-                DayOfWeek.WEDNESDAY, "Среда",
-                DayOfWeek.THURSDAY, "Четврток",
-                DayOfWeek.FRIDAY, "Петок",
-                DayOfWeek.SATURDAY, "Сабота",
-                DayOfWeek.SUNDAY, "Недела"
-        );
 
         Professor professor = professorService.getProfessorById(professorId);
         model.addAttribute("professor", professor);
@@ -76,7 +68,7 @@ public class ConsultationController {
         List<Room> rooms = roomService.getAllRooms();
         model.addAttribute("rooms", rooms);
         model.addAttribute("consultationTypes", ConsultationType.values());
-        model.addAttribute("daysOfWeek", dayOfWeekMap);
+        model.addAttribute("daysOfWeek", Constants.dayOfWeekMap);
         return "manage-consultation-form";
     }
 
@@ -112,19 +104,11 @@ public class ConsultationController {
 
     @PostMapping("/consultations/copy/{id}")
     public String copyConsultation(@PathVariable Long id, Model model) {
-        Map<DayOfWeek, String> dayOfWeekMap = Map.of(
-                DayOfWeek.MONDAY, "Понеделник",
-                DayOfWeek.TUESDAY, "Вторник",
-                DayOfWeek.WEDNESDAY, "Среда",
-                DayOfWeek.THURSDAY, "Четврток",
-                DayOfWeek.FRIDAY, "Петок",
-                DayOfWeek.SATURDAY, "Сабота",
-                DayOfWeek.SUNDAY, "Недела"
-        );
+
         String formattedOneTimeDate = DateTimeFormatter.ofPattern("yyyy-MM-dd").format(consultationService.findById(id).get().getOneTimeDate());
         model.addAttribute("formattedOneTimeDate", formattedOneTimeDate);
         model.addAttribute("consultationTypes", ConsultationType.values());
-        model.addAttribute("daysOfWeek", dayOfWeekMap);
+        model.addAttribute("daysOfWeek", Constants.dayOfWeekMap);
         model.addAttribute("consultation", consultationService.findById(id).get());
         model.addAttribute("isCopy", true);
 
@@ -162,27 +146,19 @@ public class ConsultationController {
     public String myConsultationsView(@PathVariable String username, Model model) {
         var consultations = consultationService.getConsultationsByProfessor(username);
 
-        Map<DayOfWeek, String> dayOfWeekMap = Map.of(
-                DayOfWeek.MONDAY, "Понеделник",
-                DayOfWeek.TUESDAY, "Вторник",
-                DayOfWeek.WEDNESDAY, "Среда",
-                DayOfWeek.THURSDAY, "Четврток",
-                DayOfWeek.FRIDAY, "Петок",
-                DayOfWeek.SATURDAY, "Сабота",
-                DayOfWeek.SUNDAY, "Недела"
-        );
         consultations.forEach(consultation -> {
             consultation.setReservations(consultation.getReservations().stream()
                     .sorted(Comparator.comparing(Reservation::getId))
                     .collect(Collectors.toList()));
         });
-        
+
         professorService.findById(username).ifPresent(i -> model.addAttribute("professor", i));
+
         model.addAttribute("username", username);
         model.addAttribute("consultations", consultations);
         model.addAttribute("today", LocalDate.now());
         model.addAttribute("timeNow", LocalTime.now());
-        model.addAttribute("daysOfWeek", dayOfWeekMap);
+        model.addAttribute("daysOfWeek", Constants.dayOfWeekMap);
 
         return "my-consultations";
     }
@@ -220,22 +196,12 @@ public class ConsultationController {
                 model.addAttribute("message", "No more reservations in queue.");
             }
 
-            Map<DayOfWeek, String> dayOfWeekMap = Map.of(
-                    DayOfWeek.MONDAY, "Понеделник",
-                    DayOfWeek.TUESDAY, "Вторник",
-                    DayOfWeek.WEDNESDAY, "Среда",
-                    DayOfWeek.THURSDAY, "Четврток",
-                    DayOfWeek.FRIDAY, "Петок",
-                    DayOfWeek.SATURDAY, "Сабота",
-                    DayOfWeek.SUNDAY, "Недела"
-            );
-
 
             model.addAttribute("username", username);
             model.addAttribute("consultations", consultations);
             model.addAttribute("today", LocalDate.now());
             model.addAttribute("timeNow", LocalTime.now());
-            model.addAttribute("daysOfWeek", dayOfWeekMap);
+            model.addAttribute("daysOfWeek", Constants.dayOfWeekMap);
 
         } else {
             model.addAttribute("error", "Reservation not found for the given number ID.");
