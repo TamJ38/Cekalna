@@ -6,6 +6,8 @@ import mk.ukim.finki.wp.chekalna.model.Number;
 import mk.ukim.finki.wp.chekalna.model.enums.NumberStatus;
 import mk.ukim.finki.wp.chekalna.repository.ConsultationRepository;
 import mk.ukim.finki.wp.chekalna.service.interfaces.*;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -44,7 +46,7 @@ public class ReservationController {
         if (consultationNumbers.isEmpty()) {
             consultationNumbers = numberService.createNumberForConsultation(consultationId);
         }
-        Collections.sort(consultationNumbers,Comparator.comparing(Number::getId));
+        Collections.sort(consultationNumbers, Comparator.comparing(Number::getId));
         model.addAttribute("consultation", consultation);
         model.addAttribute("student", user);
         model.addAttribute("numbers", consultationNumbers);
@@ -73,5 +75,16 @@ public class ReservationController {
         reservationService.save(new Reservation(student, consultation.getProfessor(), consultation.getStartTime(), consultation.getEndTime(), number, consultation));
 
         return "redirect:/";
+    }
+
+    @GetMapping("/{username}")
+    public String showReservations(@PathVariable String username) {
+        Student student = studentService.findByEmail(username).orElseThrow(() -> new IllegalArgumentException("User not found"));
+        List<Reservation> reservationList = reservationService.findAllByStudent(student);
+
+        int size=reservationList.size();
+
+
+        return "my-resevations.html";
     }
 }

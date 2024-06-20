@@ -16,6 +16,9 @@
             <li sec:authorize="hasAnyRole('ROLE_ADMIN', 'ROLE_PROFESSOR')">
                 <a th:href="@{/consultations/{username}(username=${#authentication.name})}" class="nav-link px-2 text-white">Мои консултации</a>
             </li>
+            <li sec:authorize="hasRole('ROLE_GUEST')">
+                <a th:href="@{/reservations/{username}(username=${#authentication.name})}" class="nav-link px-2 text-white">Мои резервации</a>
+            </li>
         </ul>
 
 
