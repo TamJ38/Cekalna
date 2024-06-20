@@ -105,6 +105,7 @@ public class ConsultationServiceImpl implements ConsultationService {
         consultation.setWeeklyDayOfWeek(weeklyDayOfWeek);
         consultation.setStartTime(startTime);
         consultation.setEndTime(endTime);
+        consultation.setMaxStudents(maxStudents);
         saveConsultation(consultation,maxStudents);
     }
 
