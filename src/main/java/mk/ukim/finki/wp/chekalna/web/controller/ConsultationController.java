@@ -107,7 +107,7 @@ public class ConsultationController {
             professor[0] = consultation.getProfessor();
         });
 
-        return "redirect:/consultations" + professor[0].getId();
+        return "redirect:/consultations/" + professor[0].getId();
     }
 
     @PostMapping("/consultations/copy/{id}")
