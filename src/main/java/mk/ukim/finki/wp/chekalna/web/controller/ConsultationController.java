@@ -171,6 +171,12 @@ public class ConsultationController {
                 DayOfWeek.SATURDAY, "Сабота",
                 DayOfWeek.SUNDAY, "Недела"
         );
+        consultations.forEach(consultation -> {
+            consultation.setReservations(consultation.getReservations().stream()
+                    .sorted(Comparator.comparing(Reservation::getId))
+                    .collect(Collectors.toList()));
+        });
+        
         professorService.findById(username).ifPresent(i -> model.addAttribute("professor", i));
         model.addAttribute("username", username);
         model.addAttribute("consultations", consultations);

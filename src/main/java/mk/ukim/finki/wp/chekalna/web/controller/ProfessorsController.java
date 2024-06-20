@@ -18,8 +18,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Controller
 @AllArgsConstructor
@@ -40,6 +42,14 @@ public class ProfessorsController {
         } else {
             professors = professorService.getAllProfessors();
         }
+
+        professors.forEach(professor -> {
+            professor.getConsultations().forEach(consultation -> {
+                consultation.setReservations(consultation.getReservations().stream()
+                        .sorted(Comparator.comparing(Reservation::getId))
+                        .collect(Collectors.toList()));
+            });
+        });
 
         Map<DayOfWeek, String> dayOfWeekMap = Map.of(
                 DayOfWeek.MONDAY, "Понеделник",
