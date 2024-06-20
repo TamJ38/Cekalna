@@ -13,10 +13,14 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Controller
 @RequestMapping("/reservations")
@@ -78,13 +82,30 @@ public class ReservationController {
     }
 
     @GetMapping("/{username}")
-    public String showReservations(@PathVariable String username) {
+    public String showReservations(@PathVariable String username, Model model) {
         Student student = studentService.findByEmail(username).orElseThrow(() -> new IllegalArgumentException("User not found"));
         List<Reservation> reservationList = reservationService.findAllByStudent(student);
+        Map<DayOfWeek, String> dayOfWeekMap = Map.of(
+                DayOfWeek.MONDAY, "Понеделник",
+                DayOfWeek.TUESDAY, "Вторник",
+                DayOfWeek.WEDNESDAY, "Среда",
+                DayOfWeek.THURSDAY, "Четврток",
+                DayOfWeek.FRIDAY, "Петок",
+                DayOfWeek.SATURDAY, "Сабота",
+                DayOfWeek.SUNDAY, "Недела"
+        );
 
-        int size=reservationList.size();
 
+        reservationList.forEach(reservation -> {
+            reservation.getConsultation().setReservations(
+                    reservation.getConsultation().getReservations().stream().sorted(Comparator.comparing(Reservation::getId)).toList()
+            );
+        });
 
-        return "my-resevations.html";
+        model.addAttribute("today", LocalDate.now());
+        model.addAttribute("timeNow", LocalTime.now());
+        model.addAttribute("daysOfWeek", dayOfWeekMap);
+        model.addAttribute("reservations", reservationList.stream().sorted(Comparator.comparing(Reservation::getId)).toList());
+        return "my-resevations";
     }
 }
