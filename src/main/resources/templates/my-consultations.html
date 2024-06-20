@@ -49,8 +49,8 @@
     <div th:each="consultation : ${consultations}">
         <div class="card mb-3">
             <div class="card-body">
-                <h4 th:text="${consultation.professor.name}" class="card-title">Professor Name</h4>
-                <p th:text="${consultation.professor.email}" class="card-text">Email</p>
+                <h4 th:text="${consultation.professor.name}" class="card-title">Име: </h4>
+                <p th:text="${consultation.professor.email}" class="card-text">E-маил: </p>
                 <ul class="list-unstyled">
                     <li>
                         <div class="row mb-2">
