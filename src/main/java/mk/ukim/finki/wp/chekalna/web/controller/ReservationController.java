@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import mk.ukim.finki.wp.chekalna.model.*;
 import mk.ukim.finki.wp.chekalna.model.Number;
 import mk.ukim.finki.wp.chekalna.model.enums.NumberStatus;
+import mk.ukim.finki.wp.chekalna.model.utils.Constants;
 import mk.ukim.finki.wp.chekalna.repository.ConsultationRepository;
 import mk.ukim.finki.wp.chekalna.service.interfaces.*;
 import org.springframework.stereotype.Controller;
@@ -11,10 +12,13 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
+import java.time.DayOfWeek;
+import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 
 @Controller
 @RequestMapping("/reservations")
@@ -44,7 +48,7 @@ public class ReservationController {
         if (consultationNumbers.isEmpty()) {
             consultationNumbers = numberService.createNumberForConsultation(consultationId);
         }
-        Collections.sort(consultationNumbers,Comparator.comparing(Number::getId));
+        Collections.sort(consultationNumbers, Comparator.comparing(Number::getId));
         model.addAttribute("consultation", consultation);
         model.addAttribute("student", user);
         model.addAttribute("numbers", consultationNumbers);
@@ -73,5 +77,24 @@ public class ReservationController {
         reservationService.save(new Reservation(student, consultation.getProfessor(), consultation.getStartTime(), consultation.getEndTime(), number, consultation));
 
         return "redirect:/";
+    }
+
+    @GetMapping("/{username}")
+    public String showReservations(@PathVariable String username, Model model) {
+
+        Student student = studentService.findByEmail(username).orElseThrow(() -> new IllegalArgumentException("User not found"));
+        List<Reservation> reservationList = reservationService.findAllByStudent(student);
+
+        reservationList.forEach(reservation -> {
+            reservation.getConsultation().setReservations(
+                    reservation.getConsultation().getReservations().stream().sorted(Comparator.comparing(Reservation::getId)).toList()
+            );
+        });
+
+        model.addAttribute("today", LocalDate.now());
+        model.addAttribute("timeNow", LocalTime.now());
+        model.addAttribute("daysOfWeek", Constants.dayOfWeekMap);
+        model.addAttribute("reservations", reservationList.stream().sorted(Comparator.comparing(Reservation::getId)).toList());
+        return "my-reservations";
     }
 }
