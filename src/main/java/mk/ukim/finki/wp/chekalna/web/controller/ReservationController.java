@@ -94,7 +94,7 @@ public class ReservationController {
 
         reservationList.forEach(reservation -> {
             reservation.getConsultation().setReservations(
-                    reservation.getConsultation().getReservations().stream().sorted(Comparator.comparing(Reservation::getId)).toList()
+                    reservation.getConsultation().getReservations().stream().sorted(Comparator.comparing(i->i.getNumber().getId())).toList()
             );
         });
 

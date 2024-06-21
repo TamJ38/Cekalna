@@ -35,4 +35,5 @@ public interface ConsultationService {
     void copyConsultation(String professorId, Integer maxStudents, String location, ConsultationType type, LocalDate oneTimeDate, DayOfWeek weeklyDayOfWeek, LocalTime startTime, LocalTime endTime);
 
     boolean hasBooked(Consultation consultation, Student student);
+
 }
