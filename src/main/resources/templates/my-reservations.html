@@ -15,48 +15,60 @@
         <h6>Немаш резервации!</h6>
     </div>
 
-        <div class="row">
-            <div th:each="reservation : ${reservations}" class="col-md-4 mb-3">
-                <div class="card mb-3">
-                    <div class="card-body">
-                        <h4 th:text="${reservation.professor.name}" class="card-title">Име: </h4>
-                        <p th:text="${reservation.professor.getEmail()}" class="card-text">E-маил: </p>
-                        <ul class="list-unstyled">
-                            <li>
-                                <div class="row mb-2">
-                                    <div class="col-md-4">
-                                        <div class="mb-2"><strong><span th:text="${reservation.consultation.getType()}"></span></strong>
-                                        </div>
-                                        <div class="mb-2"><strong>Ден: </strong><span
-                                                th:text="${daysOfWeek[reservation.consultation.weeklyDayOfWeek]}"></span></div>
-                                        <div class="mb-2"><strong>Време: </strong><span
-                                                th:text="${reservation.consultation.startTime + ' - ' + reservation.consultation.endTime}"></span>
-                                        </div>
-                                        <div class="mb-2"><strong>Локација: </strong><span
-                                                th:text="${reservation.consultation.location}"></span></div>
+    <div class="row">
+        <div th:each="reservation : ${reservations}" class="col-md-4 mb-3">
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h4 th:text="${reservation.professor.name}" class="card-title">Име: </h4>
+                    <p th:text="${reservation.professor.getEmail()}" class="card-text">E-маил: </p>
+                    <ul class="list-unstyled">
+                        <li>
+                            <div class="row mb-2">
+                                <div class="col-md-4">
+                                    <div class="mb-2"><strong><span
+                                            th:text="${reservation.consultation.getType()}"></span></strong>
                                     </div>
-                                    <div class="col-md-4 d-flex" style="margin-left: 120px">
-                                        <div class="center-content larger-text">
-                                            <div th:if="${reservation.consultation.startTime.isBefore(timeNow) && reservation.consultation.oneTimeDate.isEqual(today)}"
-                                                 class="text-center">
-                                                <h6>На ред: </h6>
-                                                <h6 th:text="${reservation.consultation.getReservations().get(0).getNumber().getNumber()}"
-                                                    style="font-size: 1.6rem"></h6>
-                                                <h6>Твој број: </h6>
-                                                <h6 th:text="${reservation.getNumber().getNumber()}"
-                                                    style="font-size: 1.6rem"></h6>
-                                            </div>
+                                    <div class="mb-2"><strong>Ден: </strong><span
+                                            th:text="${daysOfWeek[reservation.consultation.weeklyDayOfWeek]}"></span>
+                                    </div>
+                                    <div class="mb-2"><strong>Време: </strong><span
+                                            th:text="${reservation.consultation.startTime + ' - ' + reservation.consultation.endTime}"></span>
+                                    </div>
+                                    <div class="mb-2"><strong>Локација: </strong><span
+                                            th:text="${reservation.consultation.location}"></span></div>
 
+                                    <div class="mb-2">
+                                        <th:block
+                                                th:if="${reservation.consultation.getReservations().indexOf(reservation)!=0}">
+                                            <strong>Бројчиња пред тебе: </strong><span
+                                                th:text="${reservation.consultation.getReservations().indexOf(reservation)}"></span>
+                                        </th:block>
+                                    </div>
+
+
+                                </div>
+                                <div class="col-md-4 d-flex" style="margin-left: 120px">
+                                    <div class="center-content larger-text">
+                                        <div th:if="${reservation.consultation.startTime.isBefore(timeNow) && reservation.consultation.oneTimeDate.isEqual(today)}"
+                                             class="text-center">
+                                            <h6>На ред: </h6>
+                                            <h6 th:text="${reservation.consultation.getReservations().get(0).getNumber().getNumber()}"
+                                                style="font-size: 1.6rem"></h6>
+                                            <h6>Твој број: </h6>
+                                            <h6 th:text="${reservation.getNumber().getNumber()}"
+                                                style="font-size: 1.6rem"></h6>
                                         </div>
+
                                     </div>
                                 </div>
-                            </li>
-                        </ul>
+                            </div>
+                        </li>
+                    </ul>
 
-                    </div>
                 </div>
             </div>
         </div>
+    </div>
 
 </div>
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
