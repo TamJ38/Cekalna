@@ -36,7 +36,14 @@ public class ProfessorsController {
     private final RoomService roomService;
 
     @GetMapping(path = {"/", "/professors"})
-    public String showAllProfessors(@RequestParam(value = "search", required = false) String search, Model model) {
+    public String showAllProfessors(@RequestParam(value = "search", required = false) String search,
+                                    Model model,
+                                    @RequestParam(required = false) String error) {
+
+        if (error!=null) {
+            model.addAttribute("error","Веќе имате резервирано термин!");
+        }
+
         List<Professor> professors;
         if (search != null && !search.isEmpty()) {
             professors = professorService.findProfessorsByName(search);
@@ -47,7 +54,7 @@ public class ProfessorsController {
         professors.forEach(professor -> {
             professor.getConsultations().forEach(consultation -> {
                 consultation.setReservations(consultation.getReservations().stream()
-                        .sorted(Comparator.comparing(Reservation::getId))
+                        .sorted(Comparator.comparing(i->i.getNumber().getId()))
                         .collect(Collectors.toList()));
             });
         });

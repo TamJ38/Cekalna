@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
@@ -20,17 +19,21 @@
             cursor: pointer;
             transition: background-color 0.3s;
         }
+
         .number-card:hover {
             background-color: #e2e6ea;
         }
+
         .number-card.selected {
             background-color: #212529;
             color: white;
         }
+
         .number-card.disabled {
             background-color: #6c757d;
             cursor: not-allowed;
         }
+
         .numbers-container {
             display: flex;
             flex-wrap: wrap;
@@ -41,15 +44,19 @@
 <body>
 <div th:replace="~{fragments/header :: header}"></div>
 <div class="container-fluid ps-5 pe-5">
-    <h1>Резервација на термин</h1>
+    <h1 class="text-center">Резервација на термин</h1>
     <form th:action="@{/reservations/reserve}" method="post">
-        <input type="hidden" name="${_csrf.parameterName}" th:value="${_csrf.token}" />
-        <input type="hidden" name="studentId" th:value="${student.id}" />
-        <input type="hidden" name="consultationId" th:value="${consultation.id}" />
-        <input type="hidden" id="selectedNumber" name="numberId" />
+        <input type="hidden" name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+        <input type="hidden" name="studentId" th:value="${student.id}"/>
+        <input type="hidden" name="consultationId" th:value="${consultation.id}"/>
+        <input type="hidden" id="selectedNumber" name="numberId"/>
+
+        <div class="text-center alert alert-info">
+            <strong>Внимание!</strong> Бројчињата се подредени според приоритет.
+        </div>
 
         <div class="mb-3">
-            <label for="selectedNumber" class="form-label">Избери број</label>
+            <h4 for="selectedNumber" class="text-center">Избери број</h4>
             <div class="numbers-container">
                 <div th:each="number : ${numbers}">
                     <div th:class="number-card"
@@ -58,10 +65,12 @@
                          th:text="${number.getNumber()}"
                          onclick="selectNumber(this.getAttribute('data-id'))"></div>
 
-                    </div>
                 </div>
             </div>
-        <button type="submit" class="btn text-white" style="background-color: #212529;">Резервирај</button>
+        </div>
+        <div class="d-flex justify-content-center">
+            <button type="submit" class="btn text-white d-block" style="background-color: #212529;">Резервирај</button>
+        </div>
     </form>
 
 </div>

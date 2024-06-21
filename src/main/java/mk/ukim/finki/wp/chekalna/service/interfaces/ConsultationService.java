@@ -2,6 +2,7 @@ package mk.ukim.finki.wp.chekalna.service.interfaces;
 
 import mk.ukim.finki.wp.chekalna.model.Consultation;
 import mk.ukim.finki.wp.chekalna.model.Reservation;
+import mk.ukim.finki.wp.chekalna.model.Student;
 import mk.ukim.finki.wp.chekalna.model.enums.ConsultationType;
 
 
@@ -32,4 +33,7 @@ public interface ConsultationService {
     boolean nextInQueue(int id);
 
     void copyConsultation(String professorId, Integer maxStudents, String location, ConsultationType type, LocalDate oneTimeDate, DayOfWeek weeklyDayOfWeek, LocalTime startTime, LocalTime endTime);
+
+    boolean hasBooked(Consultation consultation, Student student);
+
 }

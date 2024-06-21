@@ -61,6 +61,8 @@ public class ReservationController {
     public String reserveNumber(@RequestParam("numberId") Long numberId,
                                 @RequestParam("consultationId") Long consultationId,
                                 Principal principal) {
+
+
         Number number = numberService.findById(numberId)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid number Id: " + numberId));
 
@@ -72,6 +74,11 @@ public class ReservationController {
 
         Consultation consultation = consultationService.findById(consultationId)
                 .orElseThrow(() -> new IllegalArgumentException("Invalid consultation Id: " + consultationId));
+
+        if (consultationService.hasBooked(consultation, student)) {
+            return "redirect:/?error=true";
+        }
+
         number.setStatus(NumberStatus.APPROVED);
         numberService.saveNumber(number);
         reservationService.save(new Reservation(student, consultation.getProfessor(), consultation.getStartTime(), consultation.getEndTime(), number, consultation));
@@ -87,7 +94,7 @@ public class ReservationController {
 
         reservationList.forEach(reservation -> {
             reservation.getConsultation().setReservations(
-                    reservation.getConsultation().getReservations().stream().sorted(Comparator.comparing(Reservation::getId)).toList()
+                    reservation.getConsultation().getReservations().stream().sorted(Comparator.comparing(i->i.getNumber().getId())).toList()
             );
         });
 

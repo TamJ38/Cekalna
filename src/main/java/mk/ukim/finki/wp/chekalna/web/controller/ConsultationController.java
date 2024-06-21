@@ -148,7 +148,7 @@ public class ConsultationController {
 
         consultations.forEach(consultation -> {
             consultation.setReservations(consultation.getReservations().stream()
-                    .sorted(Comparator.comparing(Reservation::getId))
+                    .sorted(Comparator.comparing(i->i.getNumber().getId()))
                     .collect(Collectors.toList()));
         });
 
