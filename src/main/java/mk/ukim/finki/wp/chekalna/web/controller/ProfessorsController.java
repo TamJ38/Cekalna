@@ -36,7 +36,14 @@ public class ProfessorsController {
     private final RoomService roomService;
 
     @GetMapping(path = {"/", "/professors"})
-    public String showAllProfessors(@RequestParam(value = "search", required = false) String search, Model model) {
+    public String showAllProfessors(@RequestParam(value = "search", required = false) String search,
+                                    Model model,
+                                    @RequestParam(required = false) String error) {
+
+        if (error!=null) {
+            model.addAttribute("error","Веќе имате резервирано термин!");
+        }
+
         List<Professor> professors;
         if (search != null && !search.isEmpty()) {
             professors = professorService.findProfessorsByName(search);

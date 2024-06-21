@@ -29,6 +29,7 @@
 <div th:replace="~{fragments/header :: header}">
 
 </div>
+
 <div class="container-fluid ps-5 pe-5">
     <div layout:fragment="content">
         <p style="margin-top: 30px"><span id="currentTime" th:text="${currentDate}" class="font-monospace"
@@ -42,6 +43,12 @@
                 <button type="submit" class="btn text-white" style="background-color: #212529">Пребарај</button>
             </div>
         </form>
+
+        <div class="container mt-4">
+            <div th:if="${error}" class="text-center alert alert-warning">
+                <h6 th:text="${error}"></h6>
+            </div>
+        </div>
         <!--        podreduvanje na profesori spored azbuka, listanje na nivno info i listanje na info za konsultacii-->
         <div th:each="professor, iter : ${professors}">
             <div th:if="${iter.first or (professors[iter.index - 1].name[0] != professor.name[0])}">

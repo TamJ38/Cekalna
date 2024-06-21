@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import mk.ukim.finki.wp.chekalna.model.Consultation;
 import mk.ukim.finki.wp.chekalna.model.Number;
 import mk.ukim.finki.wp.chekalna.model.Professor;
+import mk.ukim.finki.wp.chekalna.model.Student;
 import mk.ukim.finki.wp.chekalna.model.enums.ConsultationType;
 import mk.ukim.finki.wp.chekalna.model.enums.NumberStatus;
 import mk.ukim.finki.wp.chekalna.model.exceptions.ConsultationNotFound;
@@ -96,7 +97,7 @@ public class ConsultationServiceImpl implements ConsultationService {
 
     @Override
     public void copyConsultation(String professorId, Integer maxStudents, String location, ConsultationType type, LocalDate oneTimeDate, DayOfWeek weeklyDayOfWeek, LocalTime startTime, LocalTime endTime) {
-        Consultation consultation=new Consultation();
+        Consultation consultation = new Consultation();
         Professor professor = professorService.getProfessorById(professorId);
         consultation.setProfessor(professor);
         consultation.setLocation(location);
@@ -106,7 +107,15 @@ public class ConsultationServiceImpl implements ConsultationService {
         consultation.setStartTime(startTime);
         consultation.setEndTime(endTime);
         consultation.setMaxStudents(maxStudents);
-        saveConsultation(consultation,maxStudents);
+        saveConsultation(consultation, maxStudents);
+    }
+
+    @Override
+    public boolean hasBooked(Consultation consultation, Student student) {
+        return consultation.getReservations().
+                stream().anyMatch(i -> i.getStudent().getIndex().
+                        equals(student.getIndex()));
+
     }
 
 
