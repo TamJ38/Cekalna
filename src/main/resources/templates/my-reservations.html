@@ -43,6 +43,11 @@
                                             <strong>Бројчиња пред тебе: </strong><span
                                                 th:text="${reservation.consultation.getReservations().indexOf(reservation)}"></span>
                                         </th:block>
+                                        <th:block
+                                                th:if="${reservation.consultation.getReservations().indexOf(reservation)==0}">
+                                            <strong style="color: white">Бројчиња пред тебе: </strong><span style="color: white"
+                                                th:text="${reservation.consultation.getReservations().indexOf(reservation)}"></span>
+                                        </th:block>
                                     </div>
 
 
