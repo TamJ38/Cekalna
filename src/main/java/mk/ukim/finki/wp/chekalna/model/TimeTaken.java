@@ -14,12 +14,20 @@ public class TimeTaken {
     private long id;
     private LocalTime from1;
     private LocalTime to1;
-    public  long calculateTime(){
-        return Duration.between(from1,to1).toMinutes();
+    @ManyToOne
+    @JoinColumn(name = "consultation_id", nullable = false)
+    private Consultation consultation;
+
+    public long calculateTime() {
+        return Duration.between(from1, to1).toMinutes();
     }
-    public TimeTaken(){}
-    public TimeTaken(LocalTime from, LocalTime to) {
-        this.from1 = from;
-        this.to1 = to;
+
+    public TimeTaken() {
+    }
+
+    public TimeTaken(LocalTime from1, LocalTime to1, Consultation consultation) {
+        this.from1 = from1;
+        this.to1 = to1;
+        this.consultation = consultation;
     }
 }

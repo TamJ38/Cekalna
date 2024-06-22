@@ -50,7 +50,7 @@ public class Consultation {
     @OneToMany(mappedBy = "consultation", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Number> numbers = new ArrayList<>();
 
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "consultation", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<TimeTaken> waitingTime = new ArrayList<>();
 
     public void addNumber(Number number) {
