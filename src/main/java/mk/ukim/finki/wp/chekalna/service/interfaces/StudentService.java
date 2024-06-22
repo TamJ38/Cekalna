@@ -13,4 +13,6 @@ public interface StudentService {
     Page<Student> find(Integer page, Integer size, String nameOrIndex, String studyProgramCode);
 
     List<StudentDto> importStudents(List<StudentDto> students);
+    Optional<Student>findByEmail(String email);
+
 }

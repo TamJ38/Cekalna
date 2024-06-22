@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>Резервација на термин</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <style>
+        .number-card {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            width: 60px;
+            height: 60px;
+            margin: 10px;
+            background-color: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .number-card:hover {
+            background-color: #e2e6ea;
+        }
+
+        .number-card.selected {
+            background-color: #212529;
+            color: white;
+        }
+
+        .number-card.disabled {
+            background-color: #6c757d;
+            cursor: not-allowed;
+        }
+
+        .numbers-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+        }
+    </style>
+</head>
+<body>
+<div th:replace="~{fragments/header :: header}"></div>
+<div class="container-fluid ps-5 pe-5">
+    <h1 class="text-center">Резервација на термин</h1>
+    <form th:action="@{/reservations/reserve}" method="post">
+        <input type="hidden" name="${_csrf.parameterName}" th:value="${_csrf.token}"/>
+        <input type="hidden" name="studentId" th:value="${student.id}"/>
+        <input type="hidden" name="consultationId" th:value="${consultation.id}"/>
+        <input type="hidden" id="selectedNumber" name="numberId"/>
+
+        <div class="text-center alert alert-info">
+            <strong>Внимание!</strong> Бројчињата се подредени според приоритет.
+        </div>
+
+        <div class="mb-3">
+            <h4 for="selectedNumber" class="text-center">Избери број</h4>
+            <div class="numbers-container">
+                <div th:each="number : ${numbers}">
+                    <div th:class="number-card"
+                         th:classappend="${number.status == T(mk.ukim.finki.wp.chekalna.model.enums.NumberStatus).APPROVED ? 'disabled' : ''}"
+                         th:attr="data-id=${number.id}"
+                         th:text="${number.getNumber()}"
+                         onclick="selectNumber(this.getAttribute('data-id'))"></div>
+
+                </div>
+            </div>
+        </div>
+        <div class="d-flex justify-content-center">
+            <button type="submit" class="btn text-white d-block" style="background-color: #212529;">Резервирај</button>
+        </div>
+    </form>
+
+</div>
+<div th:replace="~{fragments/footer :: footer}"></div>
+<script>
+    function selectNumber(numberId) {
+        var selectedNumber = document.getElementById('selectedNumber');
+        var previousSelected = document.querySelector('.number-card.selected');
+
+        if (previousSelected) {
+            previousSelected.classList.remove('selected');
+        }
+
+        var element = document.querySelector('[data-id="' + numberId + '"]');
+        element.classList.add('selected');
+        selectedNumber.value = numberId;
+    }
+</script>
+</body>
+</html>

@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout" xmlns:sec="http://www.w3.org/1999/xhtml" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-4bw+/aepP/YC94hEpVNVgiZdgIC5+VKNBQNGCHeKRQN+PtmoHDEXuppvnDJzQIu9" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.misdeliver.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+</head>
+<body>
+<div th:replace="~{fragments/header :: header}"></div>
+<div class="container mt-5">
+    <h2 style="margin-bottom: 20px"> Уреди термин за консултации </h2>
+    <form th:action="@{${isCopy != null ? '/consultations/copy' : (consultation != null ?
+    '/consultations/update/' + consultation.id : '/consultations/add')}}" method="post">
+        <input type="hidden" name="id" th:value="${consultation?.id}" />
+        <input type="hidden" name="professorId" th:value="${isCopy != null ? consultation?.getProfessor()?.getId() : professor?.id}" />
+
+        <div class="row mb-3" style="width: 750px">
+            <div class="col-md-6">
+                <label for="location"
+                       class="form-label">Локација</label>
+                <input type="text"
+                       class="form-control"
+                       id="location"
+                       name="location"
+                       required th:value="${consultation?.location}" >
+            </div>
+            <div class="col-md-6">
+                <label for="type" class="form-label">Тип</label>
+                <select id="type"
+                        name="type"
+                        class="form-control"
+                        required>
+                    <option value="type" disabled selected>Избери тип</option>
+                    <option th:each="type : ${consultationTypes}"
+                            th:value="${type}"
+                            th:selected="${consultation?.type == type}"
+                            th:text="${type}">Тип</option>
+                </select>
+            </div>
+        </div>
+
+
+        <div class="row mb-3" style="width: 750px">
+            <div class="col-md-6">
+                <label for="oneTimeDate" class="form-label">Единечен датум</label>
+                <input type="date"
+                       class="form-control"
+                       id="oneTimeDate"
+                       name="oneTimeDate"
+                       th:value="${formattedOneTimeDate}" />
+            </div>
+            <div class="col-md-6">
+                <label for="weeklyDayOfWeek" class="form-label">Ден</label>
+                <select id="weeklyDayOfWeek"
+                        name="weeklyDayOfWeek"
+                        class="form-control">
+                    <option th:each="day : ${daysOfWeek}"
+                            th:value="${day.key}"
+                            th:text="${day.value}">Day</option>
+                </select>
+            </div>
+        </div>
+
+
+        <div class="row mb-3" style="width: 750px">
+          <div class="col-md-6">
+              <label for="startTime" class="form-label">Почеток</label>
+              <input type="time"
+                     class="form-control"
+                     id="startTime"
+                     name="startTime"
+                     th:value="${consultation?.startTime != null ? #temporals.format(consultation.startTime, 'HH:mm') : ''}"
+                     required>
+          </div>
+          <div class="col-md-6">
+              <label for="endTime" class="form-label">Крај</label>
+              <input type="time"
+                     class="form-control"
+                     id="endTime" name="endTime"
+                     th:value="${consultation?.endTime != null ? #temporals.format(consultation.endTime, 'HH:mm') : ''}"
+                     required>
+          </div>
+        </div>
+
+        <div class="row mb-3" style="width: 750px">
+           <div class="col-md-6">
+               <label for="maxStudents" class="form-label">Максимален број на студенти</label>
+               <input type="number"
+                      class="form-control"
+                      id="maxStudents"
+                      name="maxStudents"
+                      th:value="${consultation?.maxStudents}"
+                      required>
+           </div>
+        </div>
+
+        <button type="submit" class="btn text-white me-2" style="background-color: #212529;">Зачувај го терминот за консултација</button>
+    </form>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+    <div th:replace="~{fragments/footer :: footer}">&copy; 2014 The Static Templates</div>
+</div>
+</body>
+</html>

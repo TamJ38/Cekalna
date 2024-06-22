@@ -1,4 +1,4 @@
-package mk.ukim.finki.wp.chekalna.model;
+package mk.ukim.finki.wp.chekalna.model.enums;
 
 public enum RoomType {
 
