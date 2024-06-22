@@ -148,7 +148,7 @@ public class ConsultationController {
 
         consultations.forEach(consultation -> {
             consultation.setReservations(consultation.getReservations().stream()
-                    .sorted(Comparator.comparing(i->i.getNumber().getId()))
+                    .sorted(Comparator.comparing(i -> i.getNumber().getId()))
                     .collect(Collectors.toList()));
         });
 
@@ -180,7 +180,7 @@ public class ConsultationController {
             Consultation currentConsultion = this.consultationService.findById((long) id).orElseThrow(() -> new RuntimeException(""));
 
             List<TimeTaken> timeTakenList = currentConsultion.getWaitingTime();
-            timeTakenList.add(timeTakenRepository.save(new TimeTaken(currentReservation.getStartDate(), currentReservation.getEndDate())));
+            timeTakenList.add(timeTakenRepository.save(new TimeTaken(currentReservation.getStartDate(), currentReservation.getEndDate(), currentConsultion)));
             currentConsultion.setWaitingTime(timeTakenList);
             this.consultationRepository.save(currentConsultion);
             this.consultationService.calcualteAverageWaitingTime(currentConsultion.getId());

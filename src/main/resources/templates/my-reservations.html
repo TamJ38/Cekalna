@@ -31,13 +31,13 @@
                                     <div class="mb-2"><strong>Ден: </strong><span
                                             th:text="${daysOfWeek[reservation.consultation.weeklyDayOfWeek]}"></span>
                                     </div>
-                                    <div class="mb-2"><strong>Време: </strong><span
+                                    <div class="mb-2" style="width: 300px"><strong>Време: </strong><span
                                             th:text="${reservation.consultation.startTime + ' - ' + reservation.consultation.endTime}"></span>
                                     </div>
                                     <div class="mb-2"><strong>Локација: </strong><span
                                             th:text="${reservation.consultation.location}"></span></div>
 
-                                    <div class="mb-2">
+                                    <div class="mb-3" style="width: 300px">
                                         <th:block
                                                 th:if="${reservation.consultation.getReservations().indexOf(reservation)!=0}">
                                             <strong>Бројчиња пред тебе: </strong><span
@@ -45,9 +45,9 @@
                                         </th:block>
                                         <th:block
                                                 th:if="${reservation.consultation.getReservations().indexOf(reservation)==0}">
-                                            <strong style="color: white">Бројчиња пред тебе: </strong><span style="color: white"
-                                                th:text="${reservation.consultation.getReservations().indexOf(reservation)}"></span>
+                                            <strong>Вие сте на ред!</strong>
                                         </th:block>
+
                                     </div>
 
 
@@ -69,7 +69,13 @@
                             </div>
                         </li>
                     </ul>
-
+                    <th:block th:if="${reservation.consultation.timeTaken>0}">
+                        <div class="col-12">
+                            <strong>Просечно време на чекање: </strong> <span
+                                th:text="${reservation.consultation.timeTaken}"></span>
+                            <span> минути.</span>
+                        </div>
+                    </th:block>
                 </div>
             </div>
         </div>

@@ -19,6 +19,7 @@ import java.time.LocalDate;
 import java.time.LocalTime;
 import java.util.List;
 import java.util.LongSummaryStatistics;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -51,7 +52,13 @@ public class ConsultationServiceImpl implements ConsultationService {
     }
 
     public void deleteConsultation(Long id) {
-        consultationRepository.deleteById(id);
+        Consultation consultation = consultationRepository.findById(id)
+                .orElseThrow(() -> new ConsultationNotFound("Consultation not found with id: " + id));
+
+        consultation.getReservations().removeAll(consultation.getReservations());
+        consultationRepository.save(consultation);
+
+        consultationRepository.delete(consultation);
     }
 
     public Consultation updateConsultation(Long id, String location, ConsultationType type, LocalDate oneTimeDate, DayOfWeek weeklyDayOfWeek, LocalTime startTime, LocalTime endTime, Integer maxStudents) {
@@ -64,10 +71,14 @@ public class ConsultationServiceImpl implements ConsultationService {
         consultation.setWeeklyDayOfWeek(weeklyDayOfWeek);
         consultation.setStartTime(startTime);
         consultation.setEndTime(endTime);
-        consultation.setMaxStudents(maxStudents);
+        if (!Objects.equals(maxStudents, consultation.getMaxStudents())) {
+            consultation.setMaxStudents(maxStudents);
+            consultation.getNumbers().removeAll(consultation.getNumbers());
+            consultation.getReservations().removeAll(consultation.getReservations());
+        }
 
         consultationRepository.save(consultation);
-        return consultation;
+        return saveConsultation(consultation, maxStudents);
     }
 
     @Override
