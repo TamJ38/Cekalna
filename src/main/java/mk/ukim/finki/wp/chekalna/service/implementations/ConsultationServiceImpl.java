@@ -57,6 +57,10 @@ public class ConsultationServiceImpl implements ConsultationService {
 
         consultation.getReservations().removeAll(consultation.getReservations());
         consultationRepository.save(consultation);
+        consultation.getNumbers().removeAll(consultation.getNumbers());
+        consultationRepository.save(consultation);
+        consultation.getWaitingTime().removeAll(consultation.getWaitingTime());
+        consultationRepository.save(consultation);
 
         consultationRepository.delete(consultation);
     }
