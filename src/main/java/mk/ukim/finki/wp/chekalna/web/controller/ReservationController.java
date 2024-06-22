@@ -101,7 +101,7 @@ public class ReservationController {
         model.addAttribute("today", LocalDate.now());
         model.addAttribute("timeNow", LocalTime.now());
         model.addAttribute("daysOfWeek", Constants.dayOfWeekMap);
-        model.addAttribute("reservations", reservationList.stream().sorted(Comparator.comparing(Reservation::getId)).toList());
+        model.addAttribute("reservations", reservationList);
         return "my-reservations";
     }
 }
