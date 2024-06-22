@@ -73,8 +73,9 @@ public class ConsultationServiceImpl implements ConsultationService {
         consultation.setEndTime(endTime);
         if (!Objects.equals(maxStudents, consultation.getMaxStudents())) {
             consultation.setMaxStudents(maxStudents);
-            consultation.getNumbers().removeAll(consultation.getNumbers());
             consultation.getReservations().removeAll(consultation.getReservations());
+            consultationRepository.save(consultation);
+            consultation.getNumbers().removeAll(consultation.getNumbers());
         }
 
         consultationRepository.save(consultation);
